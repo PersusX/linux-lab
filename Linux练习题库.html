@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Linux 系统及应用 · 练习题库</title>
+<style>
+:root{
+  --bg:#f4f3ee;--surface:#fff;--surface2:#faf9f5;--ink:#1c1f1d;--muted:#667069;--line:#e2e0d6;
+  --accent:#0b7a5b;--accent-ink:#fff;--accent-soft:#e0f2ea;--accent-line:#a9d9c4;
+  --bad:#c2362b;--bad-soft:#fbe9e6;--bad-line:#efb6ae;--warn:#a85a07;--warn-soft:#fdf0dc;
+  --code-bg:#12171a;--code-ink:#d7efe2;--shadow:0 1px 2px rgba(20,30,25,.06),0 6px 18px rgba(20,30,25,.05);
+  --r:14px;--mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  --hf:#a86b00;--hc:#1d6fc2;--hj:#7b46b8;--hs:#0b7a5b;--hp:#c2362b;
+  --tk-c:#6b8a7a;--tk-s:#f0c674;--tk-k:#6cc7e6;--tk-p:#c9a0f0;--tk-n:#f09a6a;
+}
+:root[data-theme=dark]{
+  --bg:#0f1311;--surface:#171c19;--surface2:#1c221e;--ink:#e7ece8;--muted:#97a29a;--line:#2a322d;
+  --accent:#3fd99a;--accent-ink:#06261a;--accent-soft:#163226;--accent-line:#265a42;
+  --bad:#ff8272;--bad-soft:#341c19;--bad-line:#6a2f29;--warn:#f0b35c;--warn-soft:#32260f;
+  --code-bg:#0a0d0c;--code-ink:#d7efe2;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+  --hf:#f0c674;--hc:#7db8ff;--hj:#c7a2ff;--hs:#3fd99a;--hp:#ff8272;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme=light]){
+    --bg:#0f1311;--surface:#171c19;--surface2:#1c221e;--ink:#e7ece8;--muted:#97a29a;--line:#2a322d;
+    --accent:#3fd99a;--accent-ink:#06261a;--accent-soft:#163226;--accent-line:#265a42;
+    --bad:#ff8272;--bad-soft:#341c19;--bad-line:#6a2f29;--warn:#f0b35c;--warn-soft:#32260f;
+    --code-bg:#0a0d0c;--code-ink:#d7efe2;--shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.25);
+    --hf:#f0c674;--hc:#7db8ff;--hj:#c7a2ff;--hs:#3fd99a;--hp:#ff8272;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.65;font-size:15px;min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
+input,textarea,select{font:inherit;color:inherit}
+a{color:var(--accent)}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+/* top bar */
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;height:56px}
+.brand{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.2px;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.brand i{font-style:normal;color:var(--accent)}
+.brand .cur{display:inline-block;width:8px;height:16px;background:var(--accent);animation:blink 1.1s steps(2,start) infinite;border-radius:1px}
+@keyframes blink{to{visibility:hidden}}
+.tabs{display:flex;gap:2px;margin-left:8px;flex:1;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:7px 12px;border-radius:9px;color:var(--muted);font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:6px;position:relative}
+.tab:hover{background:var(--surface);color:var(--ink)}
+.tab.on{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.tab .n{font-size:11px;background:var(--bad);color:#fff;border-radius:99px;padding:0 6px;line-height:17px;min-width:17px;text-align:center}
+.tab svg,.bn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.iconbtn{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.iconbtn:hover{background:var(--surface);color:var(--ink)}
+.iconbtn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bn{display:none}
+main{padding:22px 0 90px}
+h1{font-size:24px;line-height:1.3;letter-spacing:-.2px}
+h2{font-size:17px;line-height:1.4}
+h3{font-size:15px}
+.sub{color:var(--muted);font-size:13.5px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+.mt{margin-top:18px}.mt2{margin-top:28px}.mb{margin-bottom:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card.flat{box-shadow:none}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.sec{display:flex;align-items:baseline;justify-content:space-between;margin:28px 0 12px}
+.sec h2{display:flex;align-items:center;gap:8px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-size:14px;font-weight:500;transition:.15s;white-space:nowrap}
+.btn:hover{border-color:var(--accent-line);background:var(--surface2)}
+.btn:active{transform:translateY(1px)}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.pri:hover{filter:brightness(1.07)}
+.btn.bad{color:var(--bad);border-color:var(--bad-line)}
+.btn.bad:hover{background:var(--bad-soft)}
+.btn.lg{padding:12px 22px;font-size:15.5px;border-radius:12px}
+.btn.sm{padding:5px 11px;font-size:13px;border-radius:8px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.chip{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);font-size:13.5px;color:var(--muted);transition:.12s}
+.chip:hover{border-color:var(--accent-line)}
+.chip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-block;font-size:12px;padding:1px 9px;border-radius:99px;background:var(--surface2);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.t-f{--h:var(--hf)}.tag.t-c{--h:var(--hc)}.tag.t-j{--h:var(--hj)}.tag.t-s{--h:var(--hs)}.tag.t-p{--h:var(--hp)}
+.tag[class*=" t-"]{color:var(--h);background:color-mix(in srgb,var(--h) 12%,transparent);border-color:color-mix(in srgb,var(--h) 32%,transparent)}
+.tag.warn{color:var(--warn);background:var(--warn-soft);border-color:transparent}
+.tag.bad{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.tag.ok{color:var(--accent);background:var(--accent-soft);border-color:transparent}
+/* hero */
+.hero{background:linear-gradient(135deg,var(--accent-soft),var(--surface) 70%);border:1px solid var(--accent-line);border-radius:18px;padding:24px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.hero .big{font-size:22px;font-weight:700;letter-spacing:-.2px}
+.hero .mix{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.mix span{font-size:13px;padding:3px 11px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+.mix b{color:var(--accent);margin-left:3px}
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-radius:12px;background:var(--warn-soft);border:1px solid transparent;color:var(--warn);font-size:14px;margin-bottom:14px}
+.banner.info{background:var(--accent-soft);color:var(--accent)}
+.banner.bad{background:var(--bad-soft);color:var(--bad)}
+.banner .sp{min-width:10px}
+/* suggestion cards */
+.sug{display:flex;flex-direction:column;gap:6px;padding:16px;text-align:left;transition:.15s}
+.sug:hover{border-color:var(--accent-line);transform:translateY(-1px)}
+.sug .num{font-size:28px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.sug .lab{font-weight:600}
+.sug .d{font-size:12.5px;color:var(--muted)}
+.sug.zero{opacity:.55}
+/* progress */
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;position:relative}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
+.bar>i.bad{background:var(--bad)}.bar>i.warn{background:#d98a1f}
+.bar.two>i.back{position:absolute;left:0;top:0;background:var(--accent-line)}
+.ch{padding:16px;display:flex;flex-direction:column;gap:9px;text-align:left}
+.ch:hover{border-color:var(--accent-line)}
+.ch .h{display:flex;align-items:baseline;gap:8px}
+.ch .h b{font-family:var(--mono);color:var(--accent);font-size:15px}
+.ch .h span{font-weight:600}
+.ch .m{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.act{display:flex;align-items:flex-end;gap:5px;height:84px}
+.act div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
+.act i{display:block;width:100%;max-width:26px;background:var(--accent-line);border-radius:5px 5px 2px 2px;min-height:3px;position:relative}
+.act i b{position:absolute;left:0;bottom:0;width:100%;background:var(--accent);border-radius:5px 5px 2px 2px}
+.act small{font-size:10.5px;color:var(--muted)}
+/* forms */
+.field{margin-bottom:20px}
+.field>label,.field>.lb{display:block;font-weight:600;margin-bottom:8px;font-size:14px}
+.field .hint{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:6px}
+select,.inp{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);min-width:0}
+select:focus,.inp:focus,textarea:focus{outline:2px solid var(--accent-line);border-color:var(--accent)}
+details.tp>summary{cursor:pointer;color:var(--accent);font-size:13.5px;padding:4px 0}
+details.tp .tg{margin:8px 0 4px}
+details.tp .tg b{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.switch{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;font-size:14px}
+.switch i{width:38px;height:22px;border-radius:99px;background:var(--line);position:relative;transition:.2s;flex:none}
+.switch i::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.switch.on i{background:var(--accent)}.switch.on i::after{left:19px}
+.count{font-size:13.5px;color:var(--muted)}
+.count b{color:var(--accent);font-size:17px}
+/* runner */
+.run-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.run-head .ttl{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.run-head .bar{flex:1;min-width:60px}
+.timer{font-family:var(--mono);font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.timer.low{color:var(--bad);font-weight:700}
+.qcard{padding:24px;position:relative}.qcard .qmeta{padding-right:42px}
+.qmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.qno{font-family:var(--mono);color:var(--muted);font-size:13px}
+.star{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.star:hover{background:var(--surface2)}
+.star svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linejoin:round}
+.star.on{color:#e0a100}.star.on svg{fill:currentColor}
+.qtext{font-size:17px;line-height:1.85;margin-bottom:18px;white-space:pre-wrap;word-break:break-word}
+.qtext .pts{font-size:12.5px;color:var(--muted);margin-left:6px}
+.blank{field-sizing:content;min-width:7em;display:inline-block;width:9.5em;max-width:100%;margin:0 4px;padding:2px 8px;border:none;border-bottom:2px solid var(--muted);background:var(--surface2);border-radius:6px 6px 0 0;font-family:var(--mono);font-size:15px;text-align:center;vertical-align:baseline}
+.blank:focus{outline:none;border-bottom-color:var(--accent);background:var(--accent-soft)}
+.blank.ok{border-bottom-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.blank.bad{border-bottom-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.opts{display:grid;gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:.12s;width:100%;font-size:15.5px;line-height:1.55}
+.opt:hover{border-color:var(--accent-line);background:var(--surface2)}
+.opt .k{flex:none;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--muted)}
+.opt .t{flex:1;padding-top:1px;word-break:break-word}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.sel .k{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.ok{border-color:var(--accent);background:var(--accent-soft)}
+.opt.ok .k{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft)}
+.opt.bad .k{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.lock{pointer-events:none}
+.jrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.jbtn{padding:18px 10px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);font-size:17px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:.12s}
+.jbtn:hover{border-color:var(--accent-line);background:var(--surface2)}
+.jbtn b{font-size:26px;line-height:1}
+.jbtn.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.jbtn.ok{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.jbtn.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.jbtn.lock{pointer-events:none}
+textarea.ans{width:100%;min-height:150px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);resize:vertical;line-height:1.6}
+textarea.ans.code{font-family:var(--mono);font-size:13.5px;min-height:200px;tab-size:4}
+.qact{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+.fb{margin-top:18px;border-radius:12px;padding:14px 16px;border:1px solid var(--accent-line);background:var(--accent-soft)}
+.fb.bad{border-color:var(--bad-line);background:var(--bad-soft)}
+.fb.neu{border-color:var(--line);background:var(--surface2)}
+.fb .v{font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.fb.ok .v{color:var(--accent)}.fb.bad .v{color:var(--bad)}
+.fb .ans{margin-top:6px}
+.fb .ans code,.ans code{font-family:var(--mono);background:var(--surface);border:1px solid var(--line);padding:1px 7px;border-radius:6px;font-size:13.5px;color:var(--ink)}
+.fb .exp{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);font-size:14px;color:var(--ink);opacity:.92}
+.fb .exp b{color:var(--muted);font-weight:600;margin-right:4px}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:13px;line-height:1.6;margin-top:6px;tab-size:4;white-space:pre}
+pre.txt{white-space:pre-wrap;word-break:break-word;font-family:var(--sans);font-size:14.5px;line-height:1.75;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:6px}
+.tk-c{color:var(--tk-c);font-style:italic}.tk-s{color:var(--tk-s)}.tk-k{color:var(--tk-k);font-weight:600}.tk-p{color:var(--tk-p)}.tk-n{color:var(--tk-n)}
+.rate{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.rate .lb{font-size:13px;color:var(--muted);margin-right:4px}
+.rate .btn.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.rate .btn.on.r0{background:var(--bad);border-color:var(--bad);color:#fff}
+.run-foot{display:flex;gap:10px;align-items:center;margin-top:16px;flex-wrap:wrap}
+.kbd{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--muted);background:var(--surface)}
+.navg{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:6px;margin-top:12px}
+.navg button{height:34px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-size:12.5px;font-family:var(--mono);color:var(--muted)}
+.navg button.ans{background:var(--surface2);color:var(--ink);border-color:var(--muted)}
+.navg button.ok{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.navg button.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.navg button.cur{outline:2px solid var(--accent);outline-offset:1px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+/* result */
+.score{font-size:64px;font-weight:800;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.score small{font-size:22px;font-weight:600;color:var(--muted);letter-spacing:0}
+.ring{--p:0;width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;flex:none}
+.ring>div{width:94px;height:94px;border-radius:50%;background:var(--surface);display:grid;place-items:center;text-align:center;font-weight:800;font-size:26px;line-height:1.1}
+.ring small{display:block;font-size:11px;font-weight:500;color:var(--muted)}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+table.t th{font-size:12.5px;color:var(--muted);font-weight:600}
+table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums}
+/* list items */
+.qi{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.qi+.qi{margin-top:10px}
+.qi>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.qi>summary::-webkit-details-marker{display:none}
+.qi>summary:hover{background:var(--surface2)}
+.qi .st{flex:1;min-width:0}
+.qi .st .tx{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.qi[open] .st .tx{-webkit-line-clamp:unset;display:block}
+.qi .st .tg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px}
+.qi .bd{padding:2px 14px 14px;border-top:1px dashed var(--line)}
+.qi .bd .opts-s{margin:10px 0 0;padding-left:0;list-style:none;display:grid;gap:4px;font-size:14px}
+.qi .bd .opts-s li.ok{color:var(--accent);font-weight:600}
+.empty{text-align:center;padding:48px 16px;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+.seg{display:inline-flex;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:3px;gap:2px}
+.seg button{padding:5px 14px;border-radius:8px;font-size:14px;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.search{position:relative;flex:1;min-width:180px}
+.search input{width:100%;padding-left:34px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+/* modal / toast */
+.modal{position:fixed;inset:0;background:rgba(10,15,12,.5);z-index:60;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.on{display:flex}
+.modal .box{background:var(--surface);border-radius:18px;max-width:480px;width:100%;max-height:88vh;overflow:auto;padding:22px;border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:99px;font-size:14px;opacity:0;transition:.25s;z-index:80;pointer-events:none;max-width:92vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+#printArea{display:none}
+.hide{display:none!important}
+@media (max-width:760px){
+  .g3,.g4{grid-template-columns:repeat(2,1fr)}
+  .tabs{display:none}
+  .bn{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bn button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:3px 0;position:relative}
+  .bn button.on{color:var(--accent);font-weight:600}
+  .bn .n{position:absolute;top:-2px;left:56%;font-size:10px;background:var(--bad);color:#fff;border-radius:99px;padding:0 5px;line-height:15px}
+  h1{font-size:21px}
+  .qcard{padding:18px 16px}.qtext{font-size:16px}
+  .hero{padding:18px}.score{font-size:52px}
+  .toast{bottom:90px}
+  .brand .tx{display:none}
+}
+@media (max-width:480px){.g2{grid-template-columns:1fr}.g3,.g4{grid-template-columns:1fr 1fr}}
+@media print{
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block;color:#000;background:#fff;padding:0;font-size:12pt}
+  #printArea h1{font-size:18pt;margin-bottom:6pt}
+  #printArea .pq{break-inside:avoid;border-bottom:1px solid #bbb;padding:8pt 0}
+  #printArea .pq pre{white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:10pt;background:#f3f3f3;color:#000;padding:6pt;border-radius:4pt}
+  #printArea .pa{margin-top:4pt;color:#0a5a3f}
+  #printArea .pe{margin-top:3pt;color:#444;font-size:10.5pt}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/home" style="text-decoration:none;color:inherit"><i>$</i><span class="tx">linux-quiz</span><span class="cur"></span></a>
+  <nav class="tabs" id="tabs"></nav>
+  <span class="sp" style="flex:0"></span>
+  <button class="iconbtn" id="btnTheme" title="切换主题" aria-label="切换主题"></button>
+  <button class="iconbtn" id="btnSet" title="设置与数据" aria-label="设置与数据"></button>
+</div></header>
+<main><div class="wrap" id="view"></div></main>
+<nav class="bn" id="bn"></nav>
+<div class="modal" id="modal"><div class="box" id="modalBox"></div></div>
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+<input type="file" id="fileIn" accept="application/json,.json" class="hide">
+
+<script>
+const QB = {"ch":{"1":"Linux系统概述与基本命令","2":"Linux系统使用（用户/vi/正则）","3":"Shell 与 Shell 编程","4":"Linux 文件系统","5":"Linux 进程管理","6":"进程间通信（信号/管道/IPC）","7":"线程编程（pthread）"},"q":[{"id":"68ccfd8","t":"f","ch":1,"tp":"发展历史与特点","q":"Linux内核最初由芬兰大学生______于1991年开发。","a":[["Linus Torvalds","Linus","林纳斯"]],"e":"1991年，Linus Torvalds 在赫尔辛基大学读书时发布了 Linux 内核第一个版本。"},{"id":"487724e5","t":"f","ch":1,"tp":"发展历史与特点","q":"UNIX 操作系统最早于1969年诞生在______实验室，主要设计者是 Ken Thompson 和 Dennis Ritchie。","a":[["贝尔","Bell","AT&T贝尔","贝尔实验室"]],"e":"UNIX 诞生于 AT&T 的贝尔实验室，1973年用 C 语言重写。"},{"id":"29d7f91a","t":"f","ch":1,"tp":"发展历史与特点","q":"GNU 计划由______于1983年发起，目标是创建自由的类 UNIX 系统。","a":[["Richard Stallman","Stallman","理查德·斯托曼","斯托曼"]],"e":"GNU 的意思是 \"GNU's Not Unix\"，由 Stallman 发起，后创办 FSF。"},{"id":"a150a8ba","t":"f","ch":1,"tp":"发展历史与特点","q":"Linux 内核标志（吉祥物）是一只______。","a":[["企鹅","Tux"]],"e":"吉祥物名为 Tux，是一只企鹅。"},{"id":"7df192f","t":"f","ch":1,"tp":"发展历史与特点","q":"Linux 遵循的、保证不同 UNIX 系统间应用程序可移植的接口标准是______。","a":[["POSIX"]],"e":"POSIX（可移植操作系统接口）是 IEEE 制定的标准，Linux 基本遵循该标准。"},{"id":"cc1a5e9","t":"f","ch":1,"tp":"内核版本与发行版","q":"使用______命令可以查看当前系统的内核版本。","a":[["uname -r","uname"]],"e":"uname -r 显示内核版本号，uname -a 显示全部系统信息。"},{"id":"cd1ddb9c","t":"f","ch":1,"tp":"内核版本与发行版","q":"Red Hat 系发行版使用的软件包格式是______，Debian 系使用的是 deb。","a":[["rpm","RPM"]],"e":"Red Hat、CentOS、Fedora 使用 RPM 包；Debian、Ubuntu 使用 DEB 包。"},{"id":"42f21b0b","t":"c","ch":1,"tp":"内核版本与发行版","q":"Linux 内核版本 2.6.32 中，其中的\"2\"表示（  ）。","a":0,"o":["主版本号","次版本号","修订号","发行日期"],"e":"版本号格式为 主版本号.次版本号.修订号，所以 2 是主版本号。"},{"id":"408645da","t":"c","ch":1,"tp":"内核版本与发行版","q":"下列不属于 Linux 发行版的是（  ）。","a":3,"o":["Ubuntu","CentOS","Debian","Solaris"],"e":"Solaris 是 Sun（Oracle）公司的 UNIX 系统，不是 Linux 发行版。"},{"id":"e48644a6","t":"c","ch":1,"tp":"内核版本与发行版","q":"下列软件包管理命令中，用于 Ubuntu/Debian 系统安装软件的是（  ）。","a":2,"o":["yum install","rpm -ivh","apt install","pacman -S"],"e":"apt（apt-get）是 Debian 系的包管理器；yum/dnf/rpm 用于 Red Hat 系。"},{"id":"1d73910c","t":"c","ch":1,"tp":"内核版本与发行版","q":"要查看当前系统运行的 Linux 内核版本号，应使用命令（  ）。","a":0,"o":["uname -r","who -r","ver","cat /bin/version"],"e":"uname -r 输出内核发行版本号。"},{"id":"76e7fbc4","t":"j","ch":1,"tp":"内核版本与发行版","q":"Linux 内核由 Linus Torvalds 开发，因此整个 Linux 发行版都是他一个人完成的。","a":false,"e":"Linux 发行版 = 内核 + GNU 工具 + 应用软件，由众多开发者和公司共同构成。"},{"id":"cc978025","t":"j","ch":1,"tp":"内核版本与发行版","q":"Linux 是 UNIX 的一个克隆（类 UNIX）系统，但不含 UNIX 源代码。","a":true,"e":"Linux 是独立重写的类 UNIX 系统，遵循 POSIX 标准，不包含 UNIX 源码。"},{"id":"fab309ed","t":"j","ch":1,"tp":"内核版本与发行版","q":"Linux 只能运行在 x86 架构的 PC 上。","a":false,"e":"Linux 可移植性强，支持 x86、ARM、MIPS、PowerPC、RISC-V 等多种架构。"},{"id":"27a56c5f","t":"j","ch":1,"tp":"内核版本与发行版","q":"Linux 属于单用户单任务操作系统。","a":false,"e":"Linux 是多用户多任务操作系统。"},{"id":"e796fcf9","t":"j","ch":1,"tp":"内核版本与发行版","q":"CentOS 与 Ubuntu 都使用 rpm 软件包格式。","a":false,"e":"Ubuntu 使用 deb 格式。"},{"id":"1cb1c6c3","t":"j","ch":1,"tp":"内核版本与发行版","q":"Linux 是 Windows 的一个版本。","a":false,"e":"两者是不同的操作系统。"},{"id":"79e50e79","t":"s","ch":1,"tp":"内核版本与发行版","q":"简述 Linux 操作系统的主要特点。（10分）","a":"1. 开源免费：源代码开放，遵循 GPL，可自由使用、修改、传播。\n2. 多用户、多任务：支持多个用户同时登录，多个任务并发执行（分时、抢占式）。\n3. 良好的可移植性：内核大部分用 C 语言编写，可运行于多种硬件平台。\n4. 丰富的网络功能：内置完整的 TCP/IP 协议栈，适合作服务器。\n5. 稳定可靠、安全性好：有完善的用户/权限管理机制，系统稳定。\n6. 遵循 POSIX 标准，与 UNIX 兼容良好；支持丰富的文件系统与设备。\n7. 良好的用户界面：既有命令行 Shell，也有图形界面（X Window/GNOME/KDE）。"},{"id":"1144f811","t":"s","ch":1,"tp":"内核版本与发行版","q":"简述 Linux 内核版本号的组成及含义，并说明什么是\"发行版\"。（10分）","a":"1. 内核版本号形如 主版本号.次版本号.修订号（如 2.6.32）：\n   - 主版本号：重大架构变化；\n   - 次版本号：功能性变化。2.6 之前奇数表示开发版、偶数表示稳定版；\n   - 修订号：Bug 修复、安全补丁等小改动。\n2. 发行版：由厂商/社区把 Linux 内核、GNU 工具、Shell、桌面环境、应用软件、安装程序和软件包管理器打包形成的完整操作系统，如 Red Hat/CentOS、Ubuntu、Debian、SUSE 等。"},{"id":"75f8013b","t":"f","ch":1,"tp":"目录结构（FHS）","q":"Linux 采用______结构的目录组织形式，唯一的起点是根目录。","a":[["树形","树状","树"]],"e":"整个文件系统是一棵以 / 为根的倒置的树。"},{"id":"441ca74c","t":"f","ch":1,"tp":"目录结构（FHS）","q":"存放系统配置文件的目录是______。","a":[["/etc"]],"e":"/etc 存放系统及服务的配置文件，如 /etc/passwd。"},{"id":"e82d8377","t":"f","ch":1,"tp":"目录结构（FHS）","q":"存放设备文件的目录是______。","a":[["/dev"]],"e":"Linux 把设备当作文件，放在 /dev 下。"},{"id":"b4ac720d","t":"f","ch":1,"tp":"目录结构（FHS）","q":"超级用户 root 的主目录是______。","a":[["/root"]],"e":"root 的主目录不在 /home 下，而是 /root。"},{"id":"e5cf1b8f","t":"f","ch":1,"tp":"目录结构（FHS）","q":"存放日志、邮件、缓存等经常变化的数据的目录是______（其下有 log 子目录）。","a":[["/var"]],"e":"/var 存放经常变化的数据，如 /var/log。"},{"id":"46cab3b9","t":"f","ch":1,"tp":"目录结构（FHS）","q":"存放引导加载程序与内核映像文件的目录是______。","a":[["/boot"]],"e":"/boot 下有 vmlinuz 内核和 grub 配置。"},{"id":"55091ae7","t":"c","ch":1,"tp":"目录结构（FHS）","q":"Linux 中 /bin 目录用于存放（  ）。","a":1,"o":["用户主目录","基本系统命令（可执行文件）","设备文件","配置文件"],"e":"/bin 存放所有用户都可用的基本命令，如 ls、cp、cat。"},{"id":"2bc79463","t":"c","ch":1,"tp":"目录结构（FHS）","q":"Linux 中 /sbin 目录主要存放（  ）。","a":0,"o":["系统管理员使用的系统管理命令","临时文件","用户数据","日志文件"],"e":"/sbin 存放 root 使用的系统管理命令，如 fdisk、ifconfig。"},{"id":"e4bde7fa","t":"c","ch":1,"tp":"目录结构（FHS）","q":"光盘、U盘等设备的临时挂载点通常是（  ）。","a":0,"o":["/mnt 或 /media","/dev","/proc","/boot"],"e":"/mnt、/media 是常用挂载点目录。"},{"id":"689991d0","t":"c","ch":1,"tp":"目录结构（FHS）","q":"下列关于 Linux 目录结构的叙述，正确的是（  ）。","a":1,"o":["每个磁盘分区有独立的盘符 C:、D:","所有分区都挂载到同一棵以 / 为根的目录树下","没有根目录","目录结构与 Windows 完全一致"],"e":"Linux 无盘符概念，分区通过 mount 挂载到目录树的某个目录上。"},{"id":"51f5f4d9","t":"c","ch":1,"tp":"目录结构（FHS）","q":"Linux 中 /lib 目录用于存放（  ）。","a":0,"o":["系统启动所需的共享库和内核模块","用户文档","日志","主目录"],"e":"/lib 存放系统程序所需的动态库（.so）和内核模块。"},{"id":"6e35d835","t":"j","ch":1,"tp":"目录结构（FHS）","q":"Linux 的目录结构与 Windows 一样，分为 C 盘、D 盘等多个盘符。","a":false,"e":"Linux 只有一个以 / 为根的目录树，没有盘符。"},{"id":"9b87d78a","t":"j","ch":1,"tp":"目录结构（FHS）","q":"/etc 目录中存放的是系统及软件的配置文件。","a":true,"e":"/etc 是配置文件目录。"},{"id":"793d926d","t":"j","ch":1,"tp":"目录结构（FHS）","q":"/proc 是存放在硬盘上的普通目录。","a":false,"e":"/proc 是内存中的虚拟（伪）文件系统。"},{"id":"8725147f","t":"j","ch":1,"tp":"目录结构（FHS）","q":"root 用户的主目录是 /home/root。","a":false,"e":"root 的主目录是 /root。"},{"id":"5a04dd45","t":"s","ch":1,"tp":"目录结构（FHS）","q":"简述 Linux 的目录结构，并说明 /bin、/etc、/dev、/home、/var、/tmp 目录的作用。（15分）","a":"1. Linux 采用树形目录结构，只有一个根目录 /，所有文件与目录（包括其他分区、设备）都挂在这棵树下；遵循 FHS（文件系统层次标准）。\n2. 常见目录作用：\n   - /bin：所有用户可用的基本命令（ls、cp、cat 等）；\n   - /etc：系统及应用程序的配置文件（passwd、fstab 等）；\n   - /dev：设备文件（硬盘 sda、终端 tty、/dev/null 等）；\n   - /home：普通用户的主目录；\n   - /var：经常变化的数据，如日志 /var/log、邮件、缓存、spool；\n   - /tmp：临时文件，所有用户可读写；\n   - 其他：/root（root 主目录）、/usr（用户程序与库）、/boot（内核与引导）、/proc（内核与进程信息）、/mnt、/media（挂载点）、/lib（库）、/sbin（管理命令）。"},{"id":"63650639","t":"f","ch":1,"tp":"路径与通配符","q":"表示当前目录的符号是______，表示上一级目录的符号是______。","a":[["."],[".."]],"e":". 当前目录，.. 上级目录。"},{"id":"90a26802","t":"f","ch":1,"tp":"路径与通配符","q":"从根目录开始的路径称为______路径。","a":[["绝对"]],"e":"以 / 开头的是绝对路径，否则为相对路径。"},{"id":"34b08111","t":"f","ch":1,"tp":"路径与通配符","q":"在 Linux 中，文件名以______开头的文件为隐藏文件。","a":[[".","点","英文句点"]],"e":"如 .bashrc；用 ls -a 才能显示。"},{"id":"a874c7ba","t":"c","ch":1,"tp":"路径与通配符","q":"通配符 ? 表示（  ）。","a":1,"o":["任意多个字符","任意单个字符","任意数字","任意字母"],"e":"? 匹配恰好一个任意字符。"},{"id":"1bbc9c3f","t":"c","ch":1,"tp":"路径与通配符","q":"命令 ls [a-c]*.txt 能匹配的文件是（  ）。","a":1,"o":["d1.txt","b2.txt","ab.doc","x.txt"],"e":"[a-c] 匹配 a、b、c 之一，后面 * 任意，且以 .txt 结尾。"},{"id":"373d285d","t":"c","ch":1,"tp":"路径与通配符","q":"假设当前目录为 /home/stu，则相对路径 ../../etc 指向（  ）。","a":1,"o":["/home/etc","/etc","/stu/etc","/home/stu/etc"],"e":"两次 .. 回到 /，再进入 etc，即 /etc。"},{"id":"81d8279f","t":"c","ch":1,"tp":"路径与通配符","q":"文件名区分大小写的操作系统是（  ）。","a":0,"o":["Linux","DOS","Windows 默认","都区分"],"e":"Linux 区分大小写，File 与 file 是不同文件。"},{"id":"75627862","t":"j","ch":1,"tp":"路径与通配符","q":"Linux 中文件名区分大小写，Test.txt 与 test.txt 是两个不同的文件。","a":true,"e":"Linux 文件名区分大小写。"},{"id":"a4221f01","t":"j","ch":1,"tp":"路径与通配符","q":"Linux 文件名的扩展名决定文件能否执行。","a":false,"e":"是否可执行由权限位决定，与扩展名无关。"},{"id":"d59dfc67","t":"j","ch":1,"tp":"路径与通配符","q":"通配符 * 可以匹配以点开头的隐藏文件。","a":false,"e":"默认情况下 * 不匹配以 . 开头的文件。"},{"id":"d0c53ba7","t":"j","ch":1,"tp":"路径与通配符","q":"以 / 开头的路径是绝对路径。","a":true,"e":"绝对路径从根目录开始。"},{"id":"7983ba52","t":"f","ch":1,"tp":"常用文件与目录命令","q":"显示当前工作目录的命令是______。","a":[["pwd"]],"e":"pwd = print working directory。"},{"id":"bcff0406","t":"f","ch":1,"tp":"常用文件与目录命令","q":"列出目录内容的命令是______，以长格式显示详细信息需加选项______。","a":[["ls"],["-l","ls -l"]],"e":"ls -l 长格式；ls -a 显示隐藏文件；ls -h 配合 -l 人性化显示大小。"},{"id":"a7883e54","t":"f","ch":1,"tp":"常用文件与目录命令","q":"创建目录的命令是______，递归创建多级目录需加选项______。","a":[["mkdir"],["-p","mkdir -p"]],"e":"mkdir -p a/b/c 可一次创建多级目录。"},{"id":"4c02133b","t":"f","ch":1,"tp":"常用文件与目录命令","q":"复制文件的命令是______，复制目录需加选项______。","a":[["cp"],["-r","-R","-a"]],"e":"cp -r 递归复制目录。"},{"id":"ed3d6daa","t":"f","ch":1,"tp":"常用文件与目录命令","q":"移动或重命名文件的命令是______。","a":[["mv"]],"e":"mv 既可移动也可重命名。"},{"id":"3249e32f","t":"f","ch":1,"tp":"常用文件与目录命令","q":"创建空文件或更新文件时间戳的命令是______。","a":[["touch"]],"e":"touch 文件不存在则创建空文件。"},{"id":"f48ad9d8","t":"c","ch":1,"tp":"常用文件与目录命令","q":"下列命令中，用于显示当前工作目录的是（  ）。","a":0,"o":["pwd","cd","ls","dir"],"e":"pwd 输出当前绝对路径。"},{"id":"9e0ad272","t":"c","ch":1,"tp":"常用文件与目录命令","q":"下列命令中，用于删除非空目录的是（  ）。","a":1,"o":["rmdir","rm -r","del","delete"],"e":"rm -r（或 -rf）递归删除目录及其内容；rmdir 只能删空目录。"},{"id":"9353736e","t":"c","ch":1,"tp":"常用文件与目录命令","q":"命令 mkdir -p a/b/c 的作用是（  ）。","a":1,"o":["只创建 a","一次创建多级目录 a/b/c（父目录不存在时自动创建）","显示错误","创建文件 c"],"e":"-p 表示 parents，自动创建所有缺失的上级目录。"},{"id":"ec18a366","t":"c","ch":1,"tp":"常用文件与目录命令","q":"要以长格式列出当前目录所有文件（含隐藏文件），应使用（  ）。","a":2,"o":["ls -l","ls -a","ls -la","ls -R"],"e":"-l 长格式，-a 含隐藏文件，合并为 -la。"},{"id":"96fb459f","t":"c","ch":1,"tp":"常用文件与目录命令","q":"命令 ls -d */ 的作用是（  ）。","a":0,"o":["列出当前目录下所有子目录名","递归列出","显示目录内容","删除目录"],"e":"-d 列目录本身而不是其内容，*/ 匹配所有目录。"},{"id":"a4841041","t":"c","ch":1,"tp":"常用文件与目录命令","q":"执行 ls -i 时，每个文件名前显示的数字表示（  ）。","a":1,"o":["文件大小","inode 号","权限","链接数"],"e":"ls -i 在文件名前显示 inode 号。"},{"id":"9d29eec9","t":"c","ch":1,"tp":"常用文件与目录命令","q":"关于 rm 命令，下列说法错误的是（  ）。","a":2,"o":["rm -i 删除前提示确认","rm -f 强制删除，不提示","rm 删除的文件一般放入回收站可恢复","rm -r 可删除目录"],"e":"Linux 的 rm 直接删除，没有回收站，一般难以恢复。"},{"id":"6bd07c9b","t":"c","ch":1,"tp":"常用文件与目录命令","q":"命令 cp -p a b 中 -p 的含义是（  ）。","a":1,"o":["递归","保留文件属性（权限、属主、时间）","强制","提示"],"e":"-p 保留源文件的模式、所有权和时间戳。"},{"id":"49ae4b81","t":"j","ch":1,"tp":"常用文件与目录命令","q":"rmdir 命令可以删除非空目录。","a":false,"e":"rmdir 只能删除空目录，非空需 rm -r。"},{"id":"8482ae1f","t":"j","ch":1,"tp":"常用文件与目录命令","q":"mv 命令既可移动文件也可给文件重命名。","a":true,"e":"同一目录下 mv 即为重命名。"},{"id":"acbcea48","t":"j","ch":1,"tp":"常用文件与目录命令","q":"cp 命令不加选项即可复制目录及其内容。","a":false,"e":"复制目录必须加 -r（或 -a）。"},{"id":"d18552f1","t":"j","ch":1,"tp":"常用文件与目录命令","q":"rm 命令删除的文件会进入回收站，可以随时恢复。","a":false,"e":"Linux 命令行 rm 没有回收站。"},{"id":"39425350","t":"j","ch":1,"tp":"常用文件与目录命令","q":"touch 命令只能用于创建新文件。","a":false,"e":"touch 也可更新已有文件的时间戳。"},{"id":"22caddf","t":"j","ch":1,"tp":"常用文件与目录命令","q":"ls -a 可以显示以点开头的隐藏文件。","a":true,"e":"-a 显示所有文件（包括 . 和 ..）。"},{"id":"74e651f5","t":"f","ch":1,"tp":"查看文件与文本命令","q":"将文件内容全部输出到屏幕的命令是______，分页查看可用 more 或______。","a":[["cat"],["less"]],"e":"less 可前后翻页，more 只能向前。"},{"id":"d87107e0","t":"f","ch":1,"tp":"查看文件与文本命令","q":"动态跟踪文件末尾新增内容（常用于看日志）使用命令 tail ______ 文件名。","a":[["-f","tail -f"]],"e":"tail -f /var/log/messages 实时追加显示。"},{"id":"91d6a52a","t":"f","ch":1,"tp":"查看文件与文本命令","q":"cat 命令加______选项可以显示行号。","a":[["-n"]],"e":"cat -n file 显示行号。"},{"id":"156a32e2","t":"c","ch":1,"tp":"查看文件与文本命令","q":"下列命令中，用于查看文件内容的是（  ）。","a":1,"o":["view","cat","show","display"],"e":"cat 连接并显示文件内容。"},{"id":"7a207cc3","t":"c","ch":1,"tp":"查看文件与文本命令","q":"下列命令中，可以分页显示文件内容并支持向上翻页的是（  ）。","a":1,"o":["cat","less","echo","tee"],"e":"less 可前后翻页；more 通常只向前。"},{"id":"190c86dc","t":"c","ch":1,"tp":"查看文件与文本命令","q":"要实时观察日志文件 /var/log/syslog 的新增内容，应使用（  ）。","a":1,"o":["cat -f","tail -f","head -f","less -n"],"e":"tail -f 持续输出追加内容。"},{"id":"d7500934","t":"c","ch":1,"tp":"查看文件与文本命令","q":"要统计文件 a.txt 的行数，应使用（  ）。","a":1,"o":["wc -w a.txt","wc -l a.txt","wc -c a.txt","ls -l a.txt"],"e":"-l 行数，-w 单词数，-c 字节数。"},{"id":"125a5691","t":"j","ch":1,"tp":"查看文件与文本命令","q":"tail -n 3 file 显示文件的最后3行。","a":true,"e":"tail 默认显示末尾，-n 指定行数。"},{"id":"425a91c4","t":"j","ch":1,"tp":"查看文件与文本命令","q":"more 命令可以方便地向后翻页，而 less 命令不能向后翻页。","a":false,"e":"less 既能向前也能向后翻页，功能比 more 强。"},{"id":"7d5dfa67","t":"j","ch":1,"tp":"查看文件与文本命令","q":"wc -c 统计文件的字节数。","a":true,"e":"-c 字节，-l 行，-w 单词。"},{"id":"9fcf9b99","t":"s","ch":1,"tp":"查看文件与文本命令","q":"简述 Linux 中绝对路径与相对路径的区别，并说明 . 、.. 、~ 、- 的含义。（8分）","a":"1. 绝对路径：从根目录 / 开始的完整路径，如 /home/stu/a.txt，与当前目录无关，唯一确定一个文件。\n2. 相对路径：从当前工作目录出发的路径，如 ../doc/a.txt，随当前目录改变而不同。\n3. 特殊符号：\n   - . ：当前目录；\n   - .. ：上一级（父）目录；\n   - ~ ：当前用户主目录；\n   - cd - 中的 - ：上一次所在的目录（$OLDPWD）。"},{"id":"74b2f4d7","t":"f","ch":1,"tp":"帮助、系统信息与关机","q":"查看命令的详细手册页使用______命令。","a":[["man"]],"e":"如 man ls；按 q 退出，/ 搜索。"},{"id":"df5715ef","t":"f","ch":1,"tp":"帮助、系统信息与关机","q":"显示当前登录用户名的命令是______。","a":[["whoami"]],"e":"whoami 显示有效用户名；who 显示所有登录用户。"},{"id":"5dcc97b","t":"f","ch":1,"tp":"帮助、系统信息与关机","q":"显示系统日期时间的命令是______。","a":[["date"]],"e":"date +\"%Y-%m-%d %H:%M:%S\" 可自定义格式。"},{"id":"79eb596e","t":"f","ch":1,"tp":"帮助、系统信息与关机","q":"查找命令所在路径的命令是______。","a":[["which","whereis"]],"e":"which 在 PATH 中查找可执行文件位置。"},{"id":"ce7df82c","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"查看 ls 命令的帮助手册应使用（  ）。","a":1,"o":["help ls","man ls","info ls 仅此一种","ls --man"],"e":"man 是标准手册页命令（info 与 --help 也能获取帮助，但最典型是 man）。"},{"id":"32442d5b","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"下列命令中，用于立即重启系统的是（  ）。","a":1,"o":["shutdown -h now","shutdown -r now","halt","init 0"],"e":"-r 重启，-h 关机/停机。init 6 也可重启。"},{"id":"bd812ff7","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"下列命令中，用于显示当前系统所有已登录用户的是（  ）。","a":0,"o":["who","whoami","id","su"],"e":"who 列出当前登录用户。"},{"id":"57d8c599","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"在 man 手册中，退出的按键是（  ）。","a":0,"o":["q","Esc","Ctrl+D","x"],"e":"man 使用 less 分页器，按 q 退出。"},{"id":"bb046b2b","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"在终端中，终止当前正在前台运行的命令使用快捷键（  ）。","a":0,"o":["Ctrl+C","Ctrl+D","Ctrl+Z","Ctrl+L"],"e":"Ctrl+C 发送 SIGINT；Ctrl+D 表示 EOF；Ctrl+Z 挂起；Ctrl+L 清屏。"},{"id":"55672a97","t":"c","ch":1,"tp":"帮助、系统信息与关机","q":"命令行中按 Tab 键的作用是（  ）。","a":1,"o":["清屏","命令/文件名自动补全","退出","终止命令"],"e":"Tab 补全提高输入效率。"},{"id":"34c23755","t":"j","ch":1,"tp":"帮助、系统信息与关机","q":"Ctrl+D 在终端输入的开头表示输入结束（EOF），可用来退出 shell。","a":true,"e":"Ctrl+D 发送 EOF，对 bash 即退出登录。"},{"id":"674ef321","t":"j","ch":1,"tp":"帮助、系统信息与关机","q":"shutdown -r now 用于立即关机。","a":false,"e":"-r 是重启（reboot），关机用 -h。"},{"id":"87ece6f4","t":"j","ch":1,"tp":"帮助、系统信息与关机","q":"clear 命令用于清除终端屏幕。","a":true,"e":"也可用 Ctrl+L。"},{"id":"13580433","t":"j","ch":1,"tp":"帮助、系统信息与关机","q":"history 命令可以查看已经执行过的命令列表。","a":true,"e":"!n 可重复执行第 n 条历史命令。"},{"id":"51d71034","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出完成以下操作的 Linux 命令：①显示当前工作目录；②切换到 /usr/local 目录；③在当前目录下创建名为 test 的子目录；④将文件 file1.txt 复制到 test 目录下并重命名为 file2.txt；⑤删除 test 目录及其中所有内容。","a":"① pwd\n② cd /usr/local\n③ mkdir test\n④ cp file1.txt test/file2.txt\n⑤ rm -rf test      （或 rm -r test）"},{"id":"638e2f22","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：①在当前目录下一次性创建目录 project/src/code；②在 project 下创建空文件 readme.txt；③列出 project 目录下的所有文件（含隐藏文件）的详细信息；④把 project 目录整体复制为 project_bak；⑤删除 project_bak 及其内容。","a":"① mkdir -p project/src/code\n② touch project/readme.txt\n③ ls -la project\n④ cp -r project project_bak\n⑤ rm -r project_bak"},{"id":"a7a0b0a","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：①查看 /etc/passwd 文件的前5行；②查看 /var/log/messages 的最后20行；③实时跟踪 /var/log/messages 新增内容；④统计 /etc/passwd 的行数。","a":"① head -n 5 /etc/passwd\n② tail -n 20 /var/log/messages\n③ tail -f /var/log/messages\n④ wc -l /etc/passwd"},{"id":"34d411d8","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：①把 a.txt 重命名为 b.txt；②把 b.txt 移动到 /tmp 目录；③列出当前目录下所有以 .txt 结尾的文件；④列出当前目录下以 a 开头、长度恰好为3个字符的文件。","a":"① mv a.txt b.txt\n② mv b.txt /tmp\n③ ls *.txt\n④ ls a??"},{"id":"83796a44","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：①显示当前日期和时间；②显示当前登录的用户名；③显示内核版本信息；④查看 ls 命令的手册页；⑤立即重启系统。","a":"① date\n② whoami\n③ uname -r   （uname -a 显示全部）\n④ man ls\n⑤ shutdown -r now    （或 reboot / init 6）"},{"id":"c76f040f","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"设当前目录为 /home/stu。请写出命令：①用绝对路径进入 /var/log；②用相对路径进入 /home/stu/doc；③从当前位置返回上一级目录；④快速回到自己的主目录；⑤回到上一次所在的目录。","a":"① cd /var/log\n② cd doc  （当前在 /home/stu 时；若不在则 cd ../stu/doc）\n③ cd ..\n④ cd  或  cd ~\n⑤ cd -"},{"id":"b9df428c","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：①在 /tmp 下创建目录 t1；②在其中创建文件 a、b、c 三个空文件；③列出 t1 目录中的文件；④删除 t1 中的 a 文件；⑤删除整个 t1 目录。","a":"① mkdir /tmp/t1\n② touch /tmp/t1/a /tmp/t1/b /tmp/t1/c    （或 cd /tmp/t1 && touch a b c）\n③ ls /tmp/t1\n④ rm /tmp/t1/a\n⑤ rm -r /tmp/t1"},{"id":"625c7339","t":"p","ch":1,"tp":"帮助、系统信息与关机","q":"写出命令：把 /etc/passwd 中的内容显示出行号；把前10行写入文件 top10.txt（用重定向）；统计 top10.txt 的字节数。","a":"cat -n /etc/passwd\nhead -n 10 /etc/passwd > top10.txt\nwc -c top10.txt"},{"id":"561a2a30","t":"f","ch":2,"tp":"用户与组管理","q":"Linux 中保存用户账号信息的文件是______，保存加密口令的文件是______。","a":[["/etc/passwd"],["/etc/shadow"]],"e":"passwd 对所有人可读，shadow 只有 root 可读。"},{"id":"7e3eab67","t":"f","ch":2,"tp":"用户与组管理","q":"/etc/passwd 每行有______个以冒号分隔的字段。","a":[["7"]],"e":"用户名:口令:UID:GID:注释:主目录:登录Shell。"},{"id":"d4d1a3ce","t":"f","ch":2,"tp":"用户与组管理","q":"添加用户的命令是______，修改用户口令的命令是______。","a":[["useradd"],["passwd"]],"e":"useradd 创建账号，passwd 设置口令。"},{"id":"ca4ce652","t":"f","ch":2,"tp":"用户与组管理","q":"删除用户的同时删除其主目录，应使用命令 userdel ______ 用户名。","a":[["-r"]],"e":"userdel -r 同时删除主目录和邮件。"},{"id":"4aaa8996","t":"f","ch":2,"tp":"用户与组管理","q":"创建新用户组的命令是______。","a":[["groupadd"]],"e":"groupdel 删除组，groupmod 修改组。"},{"id":"802730fd","t":"f","ch":2,"tp":"用户与组管理","q":"显示当前用户的 UID、GID 及所属组信息的命令是______。","a":[["id"]],"e":"id 输出 uid=… gid=… groups=…。"},{"id":"c2c534fc","t":"c","ch":2,"tp":"用户与组管理","q":"/etc/passwd 文件中，每行的第三个字段表示（  ）。","a":2,"o":["用户名","口令","UID","GID"],"e":"顺序：用户名、口令占位符、UID、GID、注释、主目录、Shell。"},{"id":"49c5056d","t":"c","ch":2,"tp":"用户与组管理","q":"现代 Linux 系统中，用户加密口令存放在（  ）。","a":1,"o":["/etc/passwd","/etc/shadow","/etc/group","/etc/login"],"e":"passwd 中口令字段为 x，真实密文在 /etc/shadow。"},{"id":"4a15ba8c","t":"c","ch":2,"tp":"用户与组管理","q":"下列命令中，用于修改用户口令的是（  ）。","a":0,"o":["passwd","chpwd","modpass","password"],"e":"passwd 用户名。"},{"id":"5fea6a33","t":"c","ch":2,"tp":"用户与组管理","q":"命令 useradd -m -s /bin/bash -g staff zhang 中，-m 的含义是（  ）。","a":1,"o":["指定登录Shell","创建用户主目录","指定组","指定UID"],"e":"-m 创建主目录（-s 指定 Shell，-g 指定主组）。"},{"id":"4d14f280","t":"c","ch":2,"tp":"用户与组管理","q":"下列关于 su 与 su - 的区别，正确的是（  ）。","a":1,"o":["没有区别","su - 会切换到目标用户的主目录并加载其环境变量","su 才会加载环境","su - 只能切换到 root"],"e":"su - 是登录式切换，会初始化环境并切到目标用户主目录。"},{"id":"28f27729","t":"c","ch":2,"tp":"用户与组管理","q":"下列用户中，一般用于运行系统服务、不可登录的是（  ）。","a":2,"o":["root","普通用户 zhang","系统用户 nobody/daemon（shell 为 nologin）","所有用户"],"e":"系统用户的登录 Shell 常为 /sbin/nologin。"},{"id":"cfaa489f","t":"c","ch":2,"tp":"用户与组管理","q":"某用户登录 Shell 在 /etc/passwd 中被设为 /sbin/nologin，则该用户（  ）。","a":0,"o":["不能通过终端登录","可以登录","不能被删除","没有主目录"],"e":"nologin 禁止交互式登录。"},{"id":"5603a34d","t":"c","ch":2,"tp":"用户与组管理","q":"删除用户组的命令是（  ）。","a":0,"o":["groupdel","delgroup","rmgroup","userdel -g"],"e":"groupdel 组名；组内仍有用户的主组时不能删除。"},{"id":"6a9ca6c4","t":"j","ch":2,"tp":"用户与组管理","q":"/etc/passwd 中的口令字段保存的是用户的明文口令。","a":false,"e":"现代系统此处为 x，密文在 /etc/shadow，且不是明文。"},{"id":"d935cc0c","t":"j","ch":2,"tp":"用户与组管理","q":"root 用户的 UID 恒为 0。","a":true,"e":"UID 0 为超级用户。"},{"id":"774c2abe","t":"j","ch":2,"tp":"用户与组管理","q":"userdel 用户名 会默认同时删除该用户的主目录。","a":false,"e":"默认不删除主目录，需加 -r。"},{"id":"c87be31e","t":"j","ch":2,"tp":"用户与组管理","q":"普通用户可以直接使用 useradd 添加用户。","a":false,"e":"需要 root 权限（或 sudo）。"},{"id":"5b9ec910","t":"j","ch":2,"tp":"用户与组管理","q":"/etc/shadow 文件对所有用户可读。","a":false,"e":"仅 root 可读，保护口令密文。"},{"id":"fc5423e5","t":"s","ch":2,"tp":"用户与组管理","q":"简述 /etc/passwd 文件中一行记录的七个字段含义，并写出添加用户 zhang（主目录自动创建、Shell 为 bash）及设置口令的命令。（10分）","a":"1. 七个字段（以冒号分隔）：用户名 : 口令占位符(x) : UID : GID(主组) : 注释/全名 : 主目录 : 登录 Shell。\n2. 命令：\n   useradd -m -s /bin/bash zhang\n   passwd zhang"},{"id":"af8a2b3c","t":"s","ch":2,"tp":"用户与组管理","q":"简述 su 与 sudo 的区别。（6分）","a":"1. su：切换用户身份，需要知道目标用户（如 root）的口令；su - 同时加载目标用户的环境。\n2. sudo：以其他用户（通常 root）身份执行单条命令，输入的是自己的口令；权限由 /etc/sudoers 配置，可精细授权并有日志审计，更安全。"},{"id":"ad8595cf","t":"f","ch":2,"tp":"文件查找与压缩归档","q":"按文件名查找文件的命令是 find /etc ______ \"*.conf\"（填选项）。","a":[["-name"]],"e":"find 路径 -name 模式。"},{"id":"d1f03867","t":"f","ch":2,"tp":"文件查找与压缩归档","q":"find 对查找结果执行命令使用选项 -exec，命令以______结束。","a":[["\\;","\\\\;",";"]],"e":"如 find . -name \"*.o\" -exec rm {} \\;"},{"id":"f68bf593","t":"f","ch":2,"tp":"文件查找与压缩归档","q":"解压 a.tar.gz 到当前目录的命令是 tar ______ a.tar.gz。","a":[["-xzvf","xzvf","-xzf","xzf","-zxvf","zxvf"]],"e":"x 解包、z gzip。"},{"id":"412b9a8e","t":"f","ch":2,"tp":"文件查找与压缩归档","q":"tar 命令中，选项______用于列出归档内容而不解包。","a":[["-t","t"]],"e":"tar -tf a.tar。"},{"id":"6a4cfb56","t":"f","ch":2,"tp":"文件查找与压缩归档","q":"tar 命令中，选项______表示使用 bzip2 压缩。","a":[["-j","j"]],"e":"-z 对应 gzip，-j 对应 bzip2，-J 对应 xz。"},{"id":"d5d4f75a","t":"c","ch":2,"tp":"文件查找与压缩归档","q":"在 /home 下查找属主为 zhang 的文件，应使用（  ）。","a":0,"o":["find /home -user zhang","find /home -name zhang","find /home -owner zhang","grep zhang /home"],"e":"-user 按属主查找。"},{"id":"683a41df","t":"c","ch":2,"tp":"文件查找与压缩归档","q":"find / -size +10M 的含义是（  ）。","a":1,"o":["查找小于10M的文件","查找大于10M的文件","查找等于10M的文件","查找名为10M的文件"],"e":"+ 表示大于，- 表示小于。"},{"id":"51ff8d36","t":"c","ch":2,"tp":"文件查找与压缩归档","q":"下列命令中，将 a.tar.bz2 解压的是（  ）。","a":1,"o":["tar -xzf a.tar.bz2","tar -xjf a.tar.bz2","tar -cjf a.tar.bz2","gzip -d a.tar.bz2"],"e":"bz2 用 -j。"},{"id":"eaa4f049","t":"c","ch":2,"tp":"文件查找与压缩归档","q":"命令 find . -mtime -7 查找的是（  ）。","a":1,"o":["7天前修改的文件","最近7天内修改过的文件","大小为7的文件","权限为7的文件"],"e":"-mtime -n 表示 n 天以内，+n 表示 n 天以前。"},{"id":"ffc6c4e8","t":"c","ch":2,"tp":"文件查找与压缩归档","q":"locate 命令与 find 命令相比，最大的特点是（  ）。","a":1,"o":["能执行命令","基于预先建立的数据库，查找速度快","支持按权限查找","不能按文件名查找"],"e":"locate 使用 updatedb 建立的数据库，速度快，但可能不是实时的。"},{"id":"d45ea167","t":"j","ch":2,"tp":"文件查找与压缩归档","q":"tar 本身只是归档工具，压缩需要借助 gzip/bzip2 等（可用 -z/-j 调用）。","a":true,"e":"tar 打包，不压缩；加 -z/-j/-J 才压缩。"},{"id":"8428f354","t":"j","ch":2,"tp":"文件查找与压缩归档","q":"find 命令只能根据文件名查找文件。","a":false,"e":"还可按类型、大小、时间、属主、权限等查找。"},{"id":"a7730719","t":"j","ch":2,"tp":"文件查找与压缩归档","q":"gzip 命令可以直接把整个目录压缩成一个 .gz 文件。","a":false,"e":"gzip 只能压缩单个文件，目录需先用 tar 打包。"},{"id":"ed11a139","t":"j","ch":2,"tp":"文件查找与压缩归档","q":"find . -name \"*.txt\" 与 ls *.txt 的区别之一是 find 会递归搜索子目录。","a":true,"e":"find 默认递归，ls 只处理当前目录。"},{"id":"d78095f7","t":"p","ch":2,"tp":"文件查找与压缩归档","q":"写出命令：①在 /home 下查找文件名为 a.txt 的文件；②在当前目录查找大于 1M 的普通文件；③删除当前目录树下所有 .tmp 文件；④把当前目录下的 test 目录打包压缩为 test.tar.gz；⑤把它解压到 /tmp。","a":"① find /home -name a.txt\n② find . -type f -size +1M\n③ find . -name \"*.tmp\" -exec rm {} \\;      （或 find . -name \"*.tmp\" -delete）\n④ tar -czvf test.tar.gz test\n⑤ tar -xzvf test.tar.gz -C /tmp"},{"id":"8c4dc81","t":"f","ch":2,"tp":"文本处理工具","q":"在文件中搜索指定字符串的命令是______。","a":[["grep"]],"e":"Global Regular Expression Print。"},{"id":"f4d69b56","t":"f","ch":2,"tp":"文本处理工具","q":"对文本文件排序的命令是______，按数值排序加选项______。","a":[["sort"],["-n"]],"e":"sort -nr 数值逆序。"},{"id":"66973d89","t":"f","ch":2,"tp":"文本处理工具","q":"从文本中按分隔符截取字段的命令是 cut，指定分隔符选项为-d，指定字段选项为______。","a":[["-f"]],"e":"如 cut -d: -f1 /etc/passwd 取用户名。"},{"id":"7f0087f6","t":"f","ch":2,"tp":"文本处理工具","q":"比较两个文本文件差异的命令是______。","a":[["diff"]],"e":"diff a b；cmp 逐字节比较。"},{"id":"e71721d3","t":"f","ch":2,"tp":"文本处理工具","q":"流编辑器______常用 s/old/new/g 做替换。","a":[["sed"]],"e":"sed 's/a/b/g' file。"},{"id":"c426c4e9","t":"c","ch":2,"tp":"文本处理工具","q":"grep -v \"abc\" file 的作用是（  ）。","a":1,"o":["显示包含 abc 的行","显示不包含 abc 的行","显示行号","忽略大小写"],"e":"-v invert-match。"},{"id":"d503acf9","t":"c","ch":2,"tp":"文本处理工具","q":"命令 grep -c \"root\" /etc/passwd 输出的是（  ）。","a":1,"o":["匹配行的内容","匹配的行数","匹配的行号","匹配的文件名"],"e":"-c 只输出匹配行的计数。"},{"id":"a12edb4c","t":"c","ch":2,"tp":"文本处理工具","q":"要提取 /etc/passwd 中所有用户名，应使用（  ）。","a":0,"o":["cut -d: -f1 /etc/passwd","cut -f1 /etc/passwd","cut -d: -f7 /etc/passwd","cut -c1 /etc/passwd"],"e":"以冒号为分隔符取第1字段。"},{"id":"a1fd3071","t":"c","ch":2,"tp":"文本处理工具","q":"命令 sort -nr file 的作用是（  ）。","a":1,"o":["按字符升序","按数值降序","按数值升序","去重"],"e":"-n 数值，-r 逆序。"},{"id":"12894b3f","t":"c","ch":2,"tp":"文本处理工具","q":"命令 sed 's/cat/dog/g' f 的作用是（  ）。","a":0,"o":["把 f 中所有 cat 替换为 dog 并输出到屏幕（不改原文件）","直接修改 f","删除 cat","只替换每行第一个"],"e":"s 替换，g 全局；不加 -i 不改原文件。"},{"id":"9f945b3d","t":"c","ch":2,"tp":"文本处理工具","q":"awk '{print $1}' file 的作用是（  ）。","a":1,"o":["输出每行的最后一个字段","输出每行的第一个字段","输出行数","输出整个文件"],"e":"$1 是第一个字段，默认以空白分隔。"},{"id":"7fa64711","t":"c","ch":2,"tp":"文本处理工具","q":"命令 awk -F: '{print $1}' /etc/passwd 中，-F: 的含义是（  ）。","a":1,"o":["指定输出格式","指定字段分隔符为冒号","指定文件","强制执行"],"e":"-F 设置输入字段分隔符。"},{"id":"d460eee","t":"j","ch":2,"tp":"文本处理工具","q":"grep 命令在默认情况下区分大小写。","a":true,"e":"忽略大小写需加 -i。"},{"id":"17ffaa15","t":"j","ch":2,"tp":"文本处理工具","q":"uniq 命令可以去除文件中所有重复行（无论是否相邻）。","a":false,"e":"只去除相邻的重复行，通常先 sort。"},{"id":"f3799813","t":"j","ch":2,"tp":"文本处理工具","q":"cut -d: -f1,3 表示截取第1和第3个字段。","a":true,"e":"-f 可用逗号列出多个字段。"},{"id":"9cce4efb","t":"j","ch":2,"tp":"文本处理工具","q":"sed 不加 -i 选项时会直接修改原文件。","a":false,"e":"不加 -i 只输出到标准输出，原文件不变。"},{"id":"5a8e3e2a","t":"p","ch":2,"tp":"文本处理工具","q":"写出命令：①显示 /etc/passwd 中以 root 开头的行；②统计 /etc/passwd 中使用 /bin/bash 的用户数；③提取所有用户名并按字母顺序输出；④把 a.txt 中的 foo 全部替换为 bar 后另存为 b.txt。","a":"① grep '^root' /etc/passwd\n② grep -c '/bin/bash$' /etc/passwd\n③ cut -d: -f1 /etc/passwd | sort\n④ sed 's/foo/bar/g' a.txt > b.txt"},{"id":"dabf1b8d","t":"p","ch":2,"tp":"文本处理工具","q":"写出一条命令统计 words.txt 中每个单词（每行一个单词）出现的次数，并按次数从多到少排序。","a":"sort words.txt | uniq -c | sort -nr"},{"id":"2b43c126","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"vi 编辑器有三种工作模式：命令模式、______模式和末行（底行）模式。","a":[["插入","编辑","输入"]],"e":"启动 vi 默认进入命令模式。"},{"id":"1b52b0ab","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"从插入模式返回命令模式需按______键。","a":[["Esc","ESC"]],"e":"Esc 返回命令模式。"},{"id":"61fefc3f","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 命令模式下，删除当前行的命令是______，复制当前行的命令是______，粘贴命令是______。","a":[["dd"],["yy"],["p"]],"e":"P 在光标前粘贴；p 在光标后/下一行粘贴。"},{"id":"f8296cdc","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 命令模式下，撤销上一次操作的命令是______。","a":[["u"]],"e":"Ctrl+r 重做（redo）。"},{"id":"7f5956c3","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 命令模式下，向下搜索字符串 abc 的命令是______。","a":[["/abc"]],"e":"?abc 向上搜索；n 下一个，N 上一个。"},{"id":"e5d7b35e","t":"f","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 命令模式下，光标移到文件第一行用______，移到最后一行用______。","a":[["gg"],["G"]],"e":"也可 :1 与 :$ ；0 行首，$ 行尾。"},{"id":"6cfe1180","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 编辑器的三种工作模式是（  ）。","a":0,"o":["命令模式、插入模式、末行模式","编辑模式、查看模式、命令模式","普通模式、插入模式、保存模式","命令模式、编辑模式、保存模式"],"e":"vi 三种模式：命令（普通）、插入（编辑）、末行（底行/ex）模式。"},{"id":"a772aa42","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 的命令模式下，要进入末行模式应按（  ）键。","a":1,"o":["i",":","Esc","q"],"e":"命令模式输入 : 进入末行模式。"},{"id":"f1dccc60","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 中，保存并退出的命令是（  ）。","a":2,"o":[":q",":w",":wq",":q!"],"e":":wq 保存并退出。"},{"id":"32a64d3f","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 中，不保存强制退出的命令是（  ）。","a":3,"o":[":q",":w",":wq",":q!"],"e":":q! 放弃修改强制退出。"},{"id":"d398ecef","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 命令模式下，3dd 的作用是（  ）。","a":1,"o":["删除3个字符","删除光标所在行起的3行","复制3行","光标下移3行"],"e":"数字前缀表示重复次数。"},{"id":"15098640","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 命令模式下，yy 的作用是（  ）。","a":1,"o":["删除当前行","复制当前行","粘贴","撤销"],"e":"yank=复制。"},{"id":"5358c1f2","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 命令模式下，x 的作用是（  ）。","a":0,"o":["删除光标处一个字符","删除一行","复制字符","保存"],"e":"x 删除当前字符，X 删除前一个字符。"},{"id":"d1a2f6f7","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 命令 :%s/a/b/ 与 :%s/a/b/g 的区别是（  ）。","a":1,"o":["没区别","前者每行只替换第一个，后者替换每行所有匹配","前者替换整个文件，后者只替换一行","前者不替换"],"e":"g 标志表示全局替换（行内所有匹配）。"},{"id":"aa61037c","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"vi 命令模式下，要在光标所在行的下一行插入新行并进入插入模式，应按（  ）。","a":1,"o":["O","o","a","A"],"e":"小写 o 在下方新开一行，大写 O 在上方。"},{"id":"69bab741","t":"c","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 中，要将光标移到行尾，可使用（  ）。","a":1,"o":["0","$","^","G"],"e":"$ 行尾，0 行首，^ 第一个非空白字符。"},{"id":"b5af7179","t":"j","ch":2,"tp":"vi/vim 编辑器","q":"vi 启动后默认处于插入模式。","a":false,"e":"默认是命令模式。"},{"id":"11f7e0aa","t":"j","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 命令模式下按 i 进入插入模式。","a":true,"e":"i、a、o 等均可。"},{"id":"29ac6a33","t":"j","ch":2,"tp":"vi/vim 编辑器","q":":q! 命令用于保存并退出 vi。","a":false,"e":":q! 是不保存强制退出。"},{"id":"410e81ab","t":"j","ch":2,"tp":"vi/vim 编辑器","q":"vi 中 yy 删除一行，dd 复制一行。","a":false,"e":"yy 复制，dd 删除（剪切）。"},{"id":"64410ec0","t":"j","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 中，/pattern 向下搜索，?pattern 向上搜索。","a":true,"e":"n 同方向下一个，N 反方向。"},{"id":"a85ac90d","t":"j","ch":2,"tp":"vi/vim 编辑器","q":"在 vi 的插入模式下，可以直接输入 :wq 保存退出。","a":false,"e":"插入模式下输入的是文本，应先 Esc 回命令模式再输入 :wq。"},{"id":"3d63e8a2","t":"s","ch":2,"tp":"vi/vim 编辑器","q":"简述 vi 编辑器三种工作模式及其相互切换方法。（10分）","a":"1. 命令模式（普通模式）：启动默认模式，键盘输入被当作命令（移动光标、删除 dd、复制 yy、粘贴 p、撤销 u 等）。\n2. 插入模式：用于输入文本。由命令模式按 i、a、o、I、A、O 等进入。\n3. 末行模式：以 : 开头（也包括 / ? 搜索），用于保存退出、替换、设置等（:w、:q、:wq、:q!、:%s///、:set nu）。\n4. 切换：命令模式 -i/a/o→ 插入模式；插入模式 -Esc→ 命令模式；命令模式 -: / ? → 末行模式；末行模式执行命令后或按 Esc → 命令模式。（插入模式与末行模式之间需经命令模式中转）"},{"id":"cdd9c03a","t":"p","ch":2,"tp":"vi/vim 编辑器","q":"写出在 vi 中完成下列操作的命令：①在光标后插入文本；②删除当前行；③复制从当前行开始的3行；④粘贴；⑤撤销；⑥全文把 error 替换为 warn；⑦显示行号；⑧保存并退出；⑨不保存退出。","a":"① a（命令模式）\n② dd\n③ 3yy\n④ p\n⑤ u\n⑥ :%s/error/warn/g\n⑦ :set nu\n⑧ :wq\n⑨ :q!"},{"id":"8470eec6","t":"f","ch":2,"tp":"正则表达式","q":"正则表达式中，______匹配行首，______匹配行尾。","a":[["^"],["$"]],"e":"如 ^abc 以 abc 开头；abc$ 以 abc 结尾。"},{"id":"641ef570","t":"f","ch":2,"tp":"正则表达式","q":"正则表达式 [abc] 匹配 a、b、c 中的______个字符。","a":[["一","1","任意一"]],"e":"方括号表示字符集合，匹配其中任意一个字符。"},{"id":"5326bf29","t":"f","ch":2,"tp":"正则表达式","q":"正则表达式 a\\{2,4\\} 表示字符 a 重复______次（范围）。","a":[["2到4","2-4","2~4","2至4"]],"e":"基本正则中 \\{n,m\\} 表示重复 n 到 m 次。"},{"id":"62e57a82","t":"f","ch":2,"tp":"正则表达式","q":"扩展正则表达式中，______表示前一个字符出现一次或多次，______表示零次或一次。","a":[["+"],["?"]],"e":"ERE 中的 + ? | () {} 无需转义；grep -E 或 egrep 使用。"},{"id":"5fb7f122","t":"f","ch":2,"tp":"正则表达式","q":"POSIX 字符类 [[:digit:]] 匹配______。","a":[["数字","一个数字"]],"e":"[:alpha:] 字母，[:upper:] 大写，[:space:] 空白。"},{"id":"a9f365d4","t":"c","ch":2,"tp":"正则表达式","q":"正则表达式 ^abc 匹配（  ）。","a":2,"o":["以 abc 结尾的行","包含 abc 的行","以 abc 开头的行","只有 abc 的行"],"e":"^ 行首锚点。"},{"id":"a3b7835c","t":"c","ch":2,"tp":"正则表达式","q":"正则表达式 ^$ 匹配（  ）。","a":1,"o":["所有行","空行","以 $ 开头的行","含 ^ 的行"],"e":"行首紧接行尾，即空行。"},{"id":"e99cfa67","t":"c","ch":2,"tp":"正则表达式","q":"正则表达式 ab*c 不能匹配的字符串是（  ）。","a":3,"o":["ac","abc","abbbc","adc"],"e":"b* 表示 b 重复零次或多次。"},{"id":"e3ce6d04","t":"c","ch":2,"tp":"正则表达式","q":"正则表达式 ^[A-Z][a-z]*$ 匹配（  ）。","a":0,"o":["首字母大写、后面全为小写字母的单词（整行）","全部数字","以数字开头的行","任意行"],"e":"整行：一个大写字母后面接零个或多个小写字母。"},{"id":"292895f9","t":"c","ch":2,"tp":"正则表达式","q":"grep 'a\\{3\\}' file 输出的是（  ）。","a":0,"o":["含有连续3个 a 的行","含任意3个字符的行","含3个不连续 a 的行","以3个字符开头的行"],"e":"\\{3\\} 表示前一个字符重复 3 次。"},{"id":"a39f0b2c","t":"c","ch":2,"tp":"正则表达式","q":"在基本正则表达式（BRE）中，+ 和 ? 默认是（  ）。","a":1,"o":["特殊元字符","普通字符（需转义或用 -E 才有特殊含义）","错误语法","通配符"],"e":"GNU grep 中 BRE 用 \\+ \\?，或使用 grep -E。"},{"id":"14e71e25","t":"c","ch":2,"tp":"正则表达式","q":"通配符（文件名匹配）与正则表达式中，\"任意多个字符\"分别表示为（  ）。","a":0,"o":["通配符 *，正则 .*","通配符 .*，正则 *","都是 *","都是 .*"],"e":"通配符 * 本身就是任意串；正则中 * 是量词，需要 .* 表示任意串。"},{"id":"e8060296","t":"c","ch":2,"tp":"正则表达式","q":"正则表达式 [0-9]\\{3\\}-[0-9]\\{4\\} 匹配的是（  ）。","a":0,"o":["3位数字+短横线+4位数字","任意数字","3到4位数字","电话区号"],"e":"如 010-1234。"},{"id":"12de7414","t":"c","ch":2,"tp":"正则表达式","q":"正则中转义字符 \\ 的作用是（  ）。","a":0,"o":["使后面的元字符失去特殊含义","表示行首","表示或","表示重复"],"e":"如 \\. 匹配真正的点号。"},{"id":"436030e","t":"j","ch":2,"tp":"正则表达式","q":"正则表达式 ^ 表示行尾，$ 表示行首。","a":false,"e":"^ 行首，$ 行尾。"},{"id":"6c7ae968","t":"j","ch":2,"tp":"正则表达式","q":"正则表达式中的 . 匹配任意单个字符。","a":true,"e":"不含换行符。"},{"id":"e0ecaaca","t":"j","ch":2,"tp":"正则表达式","q":"正则表达式 [^abc] 匹配除 a、b、c 以外的任意单个字符。","a":true,"e":"[] 内开头的 ^ 表示取反。"},{"id":"86784cd5","t":"j","ch":2,"tp":"正则表达式","q":"正则表达式 a* 能匹配空字符串。","a":true,"e":"* 表示零次或多次。"},{"id":"51ea4588","t":"j","ch":2,"tp":"正则表达式","q":"通配符 * 与正则表达式中的 * 含义完全相同。","a":false,"e":"通配符 * 匹配任意串；正则 * 是对前一字符的重复。"},{"id":"527b7e0e","t":"j","ch":2,"tp":"正则表达式","q":"grep '^#' file 可用于找出以 # 开头的注释行。","a":true,"e":"^# 表示行首为 #。"},{"id":"bc0b459d","t":"s","ch":2,"tp":"正则表达式","q":"简述正则表达式中 ^、$、.、*、[ ] 的作用，并各举一例。（15分）","a":"1. ^ ：匹配行首。如 ^root 匹配以 root 开头的行。\n2. $ ：匹配行尾。如 bash$ 匹配以 bash 结尾的行。\n3. . ：匹配任意单个字符。如 a.c 匹配 abc、a1c 等。\n4. * ：匹配前面的字符 0 次或多次。如 ab*c 匹配 ac、abc、abbc；.* 表示任意长度任意字符。\n5. [ ] ：匹配方括号内的任意一个字符；[a-z] 表示范围，[^0-9] 表示取反。如 [Tt]est 匹配 Test 和 test。\n补充：\\{n,m\\} 重复次数，\\ 转义，扩展正则中的 + ? | ()。"},{"id":"2171ffbd","t":"p","ch":2,"tp":"正则表达式","q":"写出完成下列功能的命令或正则表达式：①匹配以 hello 开头的行；②匹配以 world 结尾的行；③匹配包含 test 的行；④在 file.txt 中查找包含 error 的行（忽略大小写，并显示行号）；⑤找出文件中的空行及其行号。","a":"① ^hello       （grep '^hello' file）\n② world$       （grep 'world$' file）\n③ test         （grep 'test' file）\n④ grep -in 'error' file.txt\n⑤ grep -n '^$' file"},{"id":"e52674e","t":"p","ch":2,"tp":"正则表达式","q":"写出匹配下列内容的正则表达式（BRE/ERE 均可，说明所用形式）：①三位数字；②以大写字母开头、后跟若干小写字母的单词；③以 192.168 开头的 IP 地址行；④只包含数字的整行。","a":"① [0-9]\\{3\\}     （ERE: [0-9]{3}）\n② ^[A-Z][a-z]*\n③ ^192\\.168\\.     （注意 . 要转义）\n④ ^[0-9]*$      （至少一位用 ^[0-9]\\+$）"},{"id":"7e7d786f","t":"p","ch":2,"tp":"正则表达式","q":"使用 grep 完成：①显示 /etc/passwd 中不含 nologin 的行；②在当前目录下递归查找包含 main 的所有 .c 文件；③统计 log.txt 中出现 ERROR 的行数；④显示以 # 开头的注释行之外的所有行。","a":"① grep -v 'nologin' /etc/passwd\n② grep -rn 'main' --include='*.c' .\n③ grep -c 'ERROR' log.txt\n④ grep -v '^#' file"},{"id":"80cc6377","t":"f","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 是用户与______之间的接口，既是命令解释器，也是一种编程语言。","a":[["内核","操作系统","kernel"]],"e":"用户通过 Shell 把命令传给内核执行。"},{"id":"e987b44d","t":"f","ch":3,"tp":"Shell 基础与脚本执行","q":"查看系统中可用的 Shell 列表，可查看文件______。","a":[["/etc/shells"]],"e":"用户登录 Shell 记录在 /etc/passwd 最后一个字段。"},{"id":"a61cc400","t":"f","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 脚本中以______符号开头的行为注释（第一行 #! 除外）。","a":[["#"]],"e":"# 之后到行末为注释。"},{"id":"b5255147","t":"f","ch":3,"tp":"Shell 基础与脚本执行","q":"运行 Shell 脚本 a.sh 的方法有：bash a.sh、______ a.sh（需先 chmod +x）、source a.sh。","a":[["./"]],"e":"赋予执行权限后用 ./a.sh 执行。"},{"id":"6206a97","t":"f","ch":3,"tp":"Shell 基础与脚本执行","q":"source 命令的等价简写是______。","a":[[".","点","英文句点"]],"e":". a.sh 与 source a.sh 相同，在当前 Shell 进程中执行，变量对当前 Shell 生效。"},{"id":"369825fd","t":"c","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 脚本第一行 #!/bin/bash 的作用是（  ）。","a":1,"o":["注释","指定该脚本使用 /bin/bash 解释执行","输出文本","定义变量"],"e":"#! 后是解释器路径。"},{"id":"9aba1cfc","t":"c","ch":3,"tp":"Shell 基础与脚本执行","q":"下列关于运行脚本的叙述，错误的是（  ）。","a":2,"o":["bash a.sh 不需要 a.sh 有执行权限","./a.sh 需要 a.sh 有执行权限","source a.sh 在子 Shell 中运行",". a.sh 与 source a.sh 等价"],"e":"source 在当前 Shell 中运行，不创建子进程。"},{"id":"847ec96f","t":"c","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 的作用不包括（  ）。","a":2,"o":["解释并执行用户命令","提供脚本编程环境","管理硬盘分区物理扇区","管理环境变量与重定向、管道"],"e":"磁盘物理管理属于内核/驱动，不是 Shell。"},{"id":"7942f2ad","t":"c","ch":3,"tp":"Shell 基础与脚本执行","q":"下列属于 Linux 下常见 Shell 的是（  ）。","a":0,"o":["bash","cmd","powershell.exe","explorer"],"e":"bash、sh、zsh、csh、ksh 等。"},{"id":"22cf9e65","t":"j","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 既是命令解释器又是一种脚本编程语言。","a":true,"e":"Shell 脚本是解释执行的。"},{"id":"d04e4999","t":"j","ch":3,"tp":"Shell 基础与脚本执行","q":"Shell 脚本文件必须以 .sh 为扩展名才能执行。","a":false,"e":"扩展名不是必须，由权限和解释器决定。"},{"id":"9a01b4fb","t":"j","ch":3,"tp":"Shell 基础与脚本执行","q":"脚本没有执行权限时，也可以用 bash a.sh 运行。","a":true,"e":"bash 读取文件内容解释，只需读权限。"},{"id":"b2cf5868","t":"j","ch":3,"tp":"Shell 基础与脚本执行","q":"bash 是 Linux 唯一的 Shell。","a":false,"e":"还有 sh、csh、tcsh、ksh、zsh 等。"},{"id":"60fd169d","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"Shell 变量赋值时，等号两边______空格（可以有/不能有）。","a":[["不能有","不能","不可有"]],"e":"正确：name=Tom；错误：name = Tom。"},{"id":"6deb412a","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"将局部变量导出为环境变量使用命令______。","a":[["export"]],"e":"export VAR=value。"},{"id":"e4f0ce70","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"删除变量使用命令______，设置只读变量使用命令______。","a":[["unset"],["readonly"]],"e":"readonly 变量不能被修改或删除。"},{"id":"134cc30c","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"环境变量______指定系统搜索可执行命令的目录列表，目录之间用冒号分隔。","a":[["PATH"]],"e":"echo $PATH 查看。"},{"id":"90def67e","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"脚本中，$0 表示______，$1 表示______，$# 表示______。","a":[["脚本名","脚本文件名","当前脚本名"],["第一个参数","第一个位置参数","第1个参数"],["参数个数","命令行参数个数","位置参数的个数"]],"e":"位置参数 $1 ~ $9，超过9个需 ${10}。"},{"id":"3d6212f2","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"$? 表示______，$$ 表示______。","a":[["上一条命令的退出状态","上一条命令的返回值","退出状态","返回值"],["当前进程ID","当前Shell的进程号","当前进程号","PID","进程号"]],"e":"$? 为 0 表示成功。"},{"id":"82d0e5cd","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"单引号的作用是______（所有字符均按字面处理），双引号中______、反引号等仍会被解释。","a":[["强引用","原样输出","完全转义","字面量","不进行任何替换"],["$","变量","变量替换","$变量"]],"e":"单引号内不做任何替换；双引号内 $、`、\\ 仍有特殊含义。"},{"id":"56940363","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"命令替换有两种写法：反引号 `cmd` 和______。","a":[["$(cmd)","$()"]],"e":"$(cmd) 可嵌套，推荐使用。"},{"id":"856b218d","t":"f","ch":3,"tp":"变量、引号与特殊变量","q":"显示一个变量值或文本的命令是______；加 -n 选项表示______。","a":[["echo"],["不换行","不输出换行符","不输出换行"]],"e":"echo -e 解释转义字符如 \\n。"},{"id":"a63e74bb","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"下列变量赋值语句，正确的是（  ）。","a":1,"o":["a = 10","a=10","$a=10","let a = 10"],"e":"等号两侧不能有空格；赋值时变量名前不加 $。"},{"id":"793cd363","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"设 name=Tom，则 echo \"Hi $name\" 与 echo 'Hi $name' 的输出分别是（  ）。","a":1,"o":["Hi Tom 和 Hi Tom","Hi Tom 和 Hi $name","Hi $name 和 Hi Tom","Hi $name 和 Hi $name"],"e":"双引号替换变量，单引号原样输出。"},{"id":"d3cd98e3","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"命令 echo `date` 与 echo $(date) 的效果（  ）。","a":1,"o":["不同","相同，都是命令替换","前者输出 date 文本","后者输出 date 文本"],"e":"两种都是命令替换。"},{"id":"33b0d535","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"脚本 ./a.sh x y z 中，$2 的值是（  ）。","a":1,"o":["x","y","z","./a.sh"],"e":"$1=x，$2=y，$3=z。"},{"id":"b9e2cc57","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"上一条命令成功执行时，$? 的值是（  ）。","a":0,"o":["0","1","-1","255"],"e":"0 表示成功，非 0 表示失败。"},{"id":"4638d2a2","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"下列特殊变量中，表示当前 Shell 进程 ID 的是（  ）。","a":1,"o":["$#","$$","$?","$!"],"e":"$! 表示最近一个后台进程的 PID。"},{"id":"ba86a012","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"设 a=5，则执行 echo ${a}th 的输出是（  ）。","a":0,"o":["5th","${a}th","ath","报错"],"e":"花括号限定变量名范围。"},{"id":"a2c24921","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"变量定义后，要使子进程（如执行的子脚本）也能使用，需要（  ）。","a":1,"o":["readonly","export","unset","local"],"e":"export 把变量变为环境变量，子进程继承。"},{"id":"d4ead527","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"下列关于 echo 命令的叙述，正确的是（  ）。","a":0,"o":["echo -n 不输出末尾换行符","echo -e 表示禁止解释转义字符","echo 只能输出字符串常量","echo 不能输出变量的值"],"e":"echo -n 不换行；-e 才是解释 \\n、\\t 等转义字符；echo 可以输出变量。"},{"id":"440779ec","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"关于环境变量 PATH，下列说法正确的是（  ）。","a":0,"o":["其值是以冒号分隔的目录列表","其值是以逗号分隔的","只能被 root 修改","不能被修改"],"e":"PATH=$PATH:/new/dir 可追加目录。"},{"id":"78100e63","t":"c","ch":3,"tp":"变量、引号与特殊变量","q":"在 bash 中，命令 a=$(( 3 + 4 * 2 )); echo $a 的输出是（  ）。","a":1,"o":["14","11","10","7"],"e":"先乘后加 3+8=11。"},{"id":"12f798f5","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"Shell 中变量必须先声明类型（如 int、char）才能使用。","a":false,"e":"Shell 变量无需声明类型，默认都是字符串。"},{"id":"3f0c7e48","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"Shell 变量赋值时等号两边不能有空格。","a":true,"e":"a=1 正确，a = 1 会被当作命令 a。"},{"id":"edcc86d6","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"单引号中的 $name 会被替换为变量的值。","a":false,"e":"单引号内原样输出。"},{"id":"f9e9eeea","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"环境变量只对当前 Shell 有效，对子进程不可见。","a":false,"e":"环境变量（export）会被子进程继承；仅局部变量不被继承。"},{"id":"e566d2e7","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"$0 表示脚本的第一个参数。","a":false,"e":"$0 是脚本名，$1 才是第一个参数。"},{"id":"6e75f0f4","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"\"$@\" 与 \"$*\" 在任何情况下的结果完全相同。","a":false,"e":"双引号中 \"$@\" 保持各参数独立，\"$*\" 合并为一个字符串。"},{"id":"f15403b5","t":"j","ch":3,"tp":"变量、引号与特殊变量","q":"反引号和 $( ) 都可以实现命令替换。","a":true,"e":"推荐 $( )，因为可嵌套且更清晰。"},{"id":"2ce01a65","t":"s","ch":3,"tp":"变量、引号与特殊变量","q":"简述 Shell 脚本中 $0、$1、$#、$?、$$、$@ 的含义。（10分）","a":"1. $0：当前脚本（命令）的名称；\n2. $1…$9：第1…第9个位置参数（第10个起用 ${10}）；\n3. $#：位置参数的个数；\n4. $?：上一条命令的退出状态（0 表示成功，非 0 失败）；\n5. $$：当前 Shell（脚本进程）的进程号 PID；\n6. $@：所有位置参数，加引号 \"$@\" 时每个参数独立；$* 也表示所有参数，但 \"$*\" 合并为一个字符串。"},{"id":"aed9bfec","t":"s","ch":3,"tp":"变量、引号与特殊变量","q":"简述单引号、双引号、反引号在 Shell 中的区别，并各举一例。（10分）","a":"1. 单引号 ' ' ：强引用，其中所有字符（包括 $、`、\\）均按字面处理，不做变量替换。例：echo '$HOME' 输出 $HOME。\n2. 双引号 \" \" ：弱引用，保留空格等，但 $变量、`命令`、$(命令)、\\ 仍被解释。例：echo \"$HOME\" 输出 /home/xxx。\n3. 反引号 ` `（或 $( )）：命令替换，把其中命令的标准输出结果替换到命令行。例：echo \"今天是 `date`\"。"},{"id":"93fffa39","t":"s","ch":3,"tp":"变量、引号与特殊变量","q":"简述 export、readonly、unset 的作用，并说明局部变量与环境变量的区别。（8分）","a":"1. export：把变量导出为环境变量，使其对之后启动的子进程可见；\n2. readonly：将变量设为只读，不能再修改或 unset；\n3. unset：删除变量。\n4. 局部变量：只在当前 Shell 中有效，子进程不可见；环境变量：经 export 后被当前 Shell 及其子进程继承，如 PATH、HOME。"},{"id":"3593a7c0","t":"f","ch":3,"tp":"算术运算与条件测试","q":"Shell 中进行整数算术运算的表达式写法之一是______，例如 $((3+4))。","a":[["$(( ))","$((  ))","$((表达式))"]],"e":"也可用 expr、let、(( ))。"},{"id":"ef48d55c","t":"f","ch":3,"tp":"算术运算与条件测试","q":"test 命令有两种形式：test 表达式 与______。","a":[["[ 表达式 ]","[ ]","[]"]],"e":"[ 与 ] 内侧必须有空格。"},{"id":"718bcc32","t":"f","ch":3,"tp":"算术运算与条件测试","q":"字符串比较：判断字符串为空用______，判断字符串非空用______。","a":[["-z"],["-n"]],"e":"-z string 长度为0；-n string 长度非0。"},{"id":"5aa54055","t":"f","ch":3,"tp":"算术运算与条件测试","q":"文件测试：判断是否为普通文件用______，是否为目录用______。","a":[["-f"],["-d"]],"e":"-e 存在，-s 大小非0，-L 符号链接。"},{"id":"1235032f","t":"f","ch":3,"tp":"算术运算与条件测试","q":"test 中逻辑与、逻辑或、逻辑非的运算符分别是______、______、______。","a":[["-a"],["-o"],["!"]],"e":"[[ ]] 或多个 [ ] 中可用 && 与 ||。"},{"id":"7fa9ac97","t":"c","ch":3,"tp":"算术运算与条件测试","q":"[ $a -eq $b ] 用于判断（  ）。","a":1,"o":["两字符串相等","两整数相等","两文件相同","a 是否为空"],"e":"-eq 整数相等；字符串相等用 =。"},{"id":"7406c276","t":"c","ch":3,"tp":"算术运算与条件测试","q":"下列关于 test 与 [ ] 的叙述，正确的是（  ）。","a":0,"o":["两者功能相同，[ ] 中括号两侧必须有空格","两者功能完全不同","[ ] 比 test 功能更多","test 只能测试文件"],"e":"[ 实际是 test 命令的别名。"},{"id":"f638ec04","t":"c","ch":3,"tp":"算术运算与条件测试","q":"判断字符串变量 s 是否为空串的正确写法是（  ）。","a":0,"o":["[ -z \"$s\" ]","[ -n \"$s\" ]","[ s = \"\" ]","[ $s -eq 0 ]"],"e":"-z 为空；建议给变量加双引号。"},{"id":"52e95a41","t":"c","ch":3,"tp":"算术运算与条件测试","q":"判断文件 f 是否存在且是目录的测试是（  ）。","a":1,"o":["[ -f f ]","[ -d f ]","[ -e f ]（仅存在）","[ -r f ]"],"e":"-d 目录；-f 普通文件。"},{"id":"69ce0e82","t":"c","ch":3,"tp":"算术运算与条件测试","q":"命令 [ -f a.txt -a -r a.txt ] 的含义是（  ）。","a":1,"o":["a.txt 是普通文件或可读","a.txt 是普通文件且可读","a.txt 是目录且可读","a.txt 不存在"],"e":"-a 逻辑与。"},{"id":"eefc91ea","t":"c","ch":3,"tp":"算术运算与条件测试","q":"表达式 $(( 7 / 2 )) 的值是（  ）。","a":1,"o":["3.5","3","4","2"],"e":"Shell 整数除法，舍去小数。"},{"id":"48017f5f","t":"c","ch":3,"tp":"算术运算与条件测试","q":"表达式 $(( 7 % 3 )) 的值是（  ）。","a":1,"o":["0","1","2","3"],"e":"% 取余数。"},{"id":"230d33fa","t":"c","ch":3,"tp":"算术运算与条件测试","q":"设 x=3，则 expr $x + 2 输出（  ）。","a":0,"o":["5","3+2","x+2","报错"],"e":"expr 要求运算符两侧有空格，输出 5。"},{"id":"8ffe1739","t":"c","ch":3,"tp":"算术运算与条件测试","q":"下列命令中，可以进行整数运算并赋值的是（  ）。","a":0,"o":["let c=a+b","c = a + b","c=a+b（得到字符串\"a+b\"）","set c = a + b"],"e":"let c=a+b 或 c=$((a+b))。"},{"id":"b5db9078","t":"j","ch":3,"tp":"算术运算与条件测试","q":"test -f file 判断 file 是否为目录。","a":false,"e":"-f 判断普通文件，-d 判断目录。"},{"id":"9b9fefb5","t":"j","ch":3,"tp":"算术运算与条件测试","q":"[ \"$a\" = \"$b\" ] 中等号两边必须有空格。","a":true,"e":"否则会被当作一个字符串。"},{"id":"b28fe581","t":"j","ch":3,"tp":"算术运算与条件测试","q":"expr 3 * 4 可以得到 12。","a":false,"e":"* 会被 Shell 展开为通配符，需写成 expr 3 \\* 4。"},{"id":"42adf61d","t":"j","ch":3,"tp":"算术运算与条件测试","q":"在 [ ] 条件测试中，> 与 < 作为整数比较运算符是安全的。","a":false,"e":"应使用 -gt、-lt；> 会被当作重定向。"},{"id":"5fe3d565","t":"j","ch":3,"tp":"算术运算与条件测试","q":"(( a > b )) 可以进行整数比较。","a":true,"e":"(( )) 内可使用 C 风格运算符。"},{"id":"dfb2301","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"Shell 中 if 语句以______结束，case 语句以______结束。","a":[["fi"],["esac"]],"e":"记忆：反写。"},{"id":"d335c574","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"if 语句的多分支关键字是______，写成 elif 条件; then。","a":[["elif"]],"e":"else if 在 Shell 中要写 elif。"},{"id":"a15125a9","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"在 case 语句中，每个分支的命令以______结束，通配（默认）分支的模式写作______。","a":[[";;","双分号"],["*)","*"]],"e":"case $x in a) ...;; *) ...;; esac。"},{"id":"d42242d3","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"要输出 1 到 5，C 风格 for 循环应写成 for ((______; i<=5; i++))。","a":[["i=1"]],"e":"初值 i=1，条件 i<=5，每次 i++。"},{"id":"919a2a76","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"until 循环在条件为______时退出（真/假）。","a":[["真"]],"e":"while 条件真时循环，until 条件假时循环。"},{"id":"5ce213f9","t":"f","ch":3,"tp":"流程控制：if / case / 循环","q":"列出 1 到 5 的序列，可用花括号展开______或命令 seq 1 5。","a":[["{1..5}"]],"e":"for i in {1..5}。"},{"id":"ae9e8215","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"Shell 中 if 语句的结束标记是（  ）。","a":1,"o":["end","fi","endif","done"],"e":"if…fi。"},{"id":"c6a25e6a","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"Shell 中 case 语句的结束标记是（  ）。","a":1,"o":["end","esac","endcase","done"],"e":"case…esac。"},{"id":"73420bb0","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"下列关于 Shell 流程控制的叙述，错误的是（  ）。","a":3,"o":["if 必须以 fi 结束","case 必须以 esac 结束","for 循环必须以 done 结束","while 循环不需要 done 结束"],"e":"while 同样需要 do … done。"},{"id":"931bb34e","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"在 if 语句中，条件为真的含义是（  ）。","a":0,"o":["命令退出状态为 0","命令退出状态为 1","命令输出非空","命令输出 true"],"e":"Shell 中以退出状态判断：0 为真，非 0 为假。"},{"id":"9a1fff7c","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"下列循环的输出是（  ）：for i in 1 2 3; do echo -n $i; done","a":1,"o":["1 2 3（换行）","123","i i i","321"],"e":"-n 不换行，输出 123。"},{"id":"35354d6c","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"命令 for i in $(seq 1 2 7); do echo $i; done 输出的数是（  ）。","a":1,"o":["1 2 3 4 5 6 7","1 3 5 7","2 4 6","1 2 7"],"e":"seq 起点 步长 终点，所以 1 3 5 7。"},{"id":"f66f1139","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"case 语句中，匹配多个模式用（  ）分隔。","a":1,"o":["逗号","竖线 |","分号","空格"],"e":"如 y|Y|yes)。"},{"id":"8e15fe8f","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"在 Shell 脚本中，无限循环的写法是（  ）。","a":0,"o":["while true; do …; done","while [ 0 -eq 1 ]; do …; done","while false; do …; done","until true; do …; done"],"e":"while true 永远为真；另外 while : 也可。"},{"id":"9a3d4b53","t":"c","ch":3,"tp":"流程控制：if / case / 循环","q":"语句 [ -f a.txt ] && echo yes || echo no 的含义是（  ）。","a":0,"o":["a.txt 是普通文件则输出 yes，否则输出 no","总是输出 yes","总是输出 no","语法错误"],"e":"&& 前面成功才执行后面，|| 前面失败才执行。"},{"id":"8fcf3822","t":"j","ch":3,"tp":"流程控制：if / case / 循环","q":"Shell 中 if 的结束标记是 endif。","a":false,"e":"结束标记是 fi。"},{"id":"5d017cb8","t":"j","ch":3,"tp":"流程控制：if / case / 循环","q":"case 语句每个分支必须以 ;; 结束。","a":true,"e":"最后一个分支的 ;; 可省略，但规范写法是加上。"},{"id":"abcded9c","t":"j","ch":3,"tp":"流程控制：if / case / 循环","q":"break 语句用于跳出当前循环，continue 语句用于跳过本次循环剩余语句。","a":true,"e":"两者含义不同。"},{"id":"ff151eb0","t":"j","ch":3,"tp":"流程控制：if / case / 循环","q":"while 循环在条件为假时执行循环体。","a":false,"e":"while 条件真时执行，until 条件假时执行。"},{"id":"c10e0c6c","t":"j","ch":3,"tp":"流程控制：if / case / 循环","q":"Shell 的 if 语句判断的是命令的退出状态，而不是布尔值。","a":true,"e":"例如 if grep -q root /etc/passwd; then …"},{"id":"ca3baa28","t":"s","ch":3,"tp":"流程控制：if / case / 循环","q":"简述 Shell 中 if 语句的基本结构（含 elif、else），并写出判断分数 score 等级的示例。（10分）","a":"1. 基本结构：\n   if 条件1; then\n       命令组1\n   elif 条件2; then\n       命令组2\n   else\n       命令组3\n   fi\n2. 示例：\n   if [ $score -ge 90 ]; then echo A\n   elif [ $score -ge 60 ]; then echo Pass\n   else echo Fail\n   fi"},{"id":"968f1aa7","t":"s","ch":3,"tp":"流程控制：if / case / 循环","q":"简述 for、while、until 三种循环的基本结构和区别。（10分）","a":"1. for：for 变量 in 列表; do 命令; done —— 遍历列表（或 C 风格 for ((i=0;i<n;i++))）；循环次数由列表确定。\n2. while：while 条件; do 命令; done —— 条件为真时循环。\n3. until：until 条件; do 命令; done —— 条件为假时循环，直到条件为真退出。\n4. 共同：循环体以 do 开始、done 结束；可用 break、continue 控制。"},{"id":"b3c09367","t":"s","ch":3,"tp":"流程控制：if / case / 循环","q":"简述 test 命令（或 [ ]）能完成的三类测试，并各举 3 个运算符。（8分）","a":"1. 整数比较：-eq（等于）、-ne（不等于）、-gt（大于）、-ge、-lt、-le。\n2. 字符串测试：=（相等）、!=（不等）、-z（长度为0）、-n（长度非0）。\n3. 文件测试：-e（存在）、-f（普通文件）、-d（目录）、-r/-w/-x（可读/写/执行）、-s（大小非0）。\n4. 逻辑组合：-a（与）、-o（或）、!（非）。注意 [ ] 内侧必须有空格。"},{"id":"dcd91f45","t":"f","ch":3,"tp":"函数、数组与重定向","q":"定义 Shell 函数的格式为：______ name() { 命令; }（可省略的关键字）。","a":[["function"]],"e":"function name { } 或 name() { }。"},{"id":"69c499a","t":"f","ch":3,"tp":"函数、数组与重定向","q":"在函数中声明只在函数内有效的变量，使用关键字______。","a":[["local"]],"e":"默认变量是全局的。"},{"id":"f974df89","t":"f","ch":3,"tp":"函数、数组与重定向","q":"输出重定向符号______覆盖写入文件，______追加写入文件。","a":[[">"],[">>"]],"e":"< 为输入重定向。"},{"id":"48940890","t":"f","ch":3,"tp":"函数、数组与重定向","q":"将标准错误重定向到文件使用______，丢弃输出使用重定向到______。","a":[["2>"],["/dev/null"]],"e":"2>&1 把错误合并到标准输出。"},{"id":"b85a70ae","t":"f","ch":3,"tp":"函数、数组与重定向","q":"将标准输出和标准错误一起重定向到 all.log 的写法（追加方式）：cmd ______ all.log 2>&1。","a":[[">>","&>>",">>"]],"e":"cmd >> all.log 2>&1。"},{"id":"fe9cd537","t":"f","ch":3,"tp":"函数、数组与重定向","q":"启动 bash 脚本并显示每条执行命令的调试选项是 bash ______ a.sh。","a":[["-x"]],"e":"-n 只检查语法，不执行。"},{"id":"5f9d8824","t":"c","ch":3,"tp":"函数、数组与重定向","q":"命令 ls > a.txt 的作用是（  ）。","a":1,"o":["把 ls 输出追加到 a.txt","把 ls 输出写入 a.txt（覆盖）","读取 a.txt","错误重定向"],"e":"> 覆盖，>> 追加。"},{"id":"818cbcc5","t":"c","ch":3,"tp":"函数、数组与重定向","q":"命令 cmd 2>&1 > f 与 cmd > f 2>&1 的区别主要在于（  ）。","a":1,"o":["没有区别","前者错误仍输出到屏幕，后者错误也进入文件","前者错误进文件","都报错"],"e":"重定向按从左到右顺序处理，2>&1 在 > f 之前时指向的是原来的屏幕。"},{"id":"5a124105","t":"c","ch":3,"tp":"函数、数组与重定向","q":"Shell 函数的参数在函数内通过（  ）获取。","a":0,"o":["$1、$2…","arg1、arg2","%1","args[]"],"e":"函数内的 $1 是函数的第一个参数，不是脚本参数。"},{"id":"a47a72e0","t":"c","ch":3,"tp":"函数、数组与重定向","q":"命令 cat <<EOF 称为（  ）。","a":1,"o":["输出重定向","Here Document（这里文档）","命令替换","管道"],"e":"<< 后接结束标记，把其间文本作为输入。"},{"id":"6d4943f8","t":"c","ch":3,"tp":"函数、数组与重定向","q":"命令 echo hello | wc -c 的输出是（  ）。","a":1,"o":["5","6","1","0"],"e":"hello 加换行符共 6 字节。"},{"id":"e4b35197","t":"c","ch":3,"tp":"函数、数组与重定向","q":"命令 ls /noexist 2> /dev/null 的结果是（  ）。","a":1,"o":["屏幕显示错误","不显示错误信息","创建文件","删除文件"],"e":"错误信息被丢弃。"},{"id":"f4392895","t":"c","ch":3,"tp":"函数、数组与重定向","q":"下面不是 Shell 调试手段的是（  ）。","a":3,"o":["bash -x a.sh","bash -n a.sh","set -x","gcc a.sh"],"e":"gcc 是 C 编译器。"},{"id":"455623ba","t":"j","ch":3,"tp":"函数、数组与重定向","q":"Shell 函数必须先定义后调用。","a":true,"e":"解释器自上而下执行，调用时函数需已定义。"},{"id":"16ceaef0","t":"j","ch":3,"tp":"函数、数组与重定向","q":">> 与 > 都表示覆盖写入。","a":false,"e":">> 追加，> 覆盖。"},{"id":"d21658c6","t":"j","ch":3,"tp":"函数、数组与重定向","q":"Shell 函数中定义的变量默认是局部变量。","a":false,"e":"默认是全局变量，需 local 才是局部变量。"},{"id":"b02270af","t":"j","ch":3,"tp":"函数、数组与重定向","q":"bash -n a.sh 只检查脚本语法，不执行。","a":true,"e":"-n = noexec。"},{"id":"7811a4cf","t":"j","ch":3,"tp":"函数、数组与重定向","q":"/dev/null 是一个特殊的空设备，写入的内容会被丢弃。","a":true,"e":"常用于屏蔽输出。"},{"id":"7b3fc6c6","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本，完成：①显示当前日期和时间；②显示当前登录用户名；③显示当前工作目录；④提示输入姓名并输出 \"Hello, 姓名\"。","a":"#!/bin/bash\necho \"当前日期时间: $(date)\"\necho \"当前用户: $(whoami)\"\necho \"当前目录: $(pwd)\"\nread -p \"请输入你的名字: \" name\necho \"Hello, $name\""},{"id":"7b27f66e","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：判断当前目录下是否存在文件 test.txt，存在则输出\"存在\"，否则输出\"不存在\"。","a":"#!/bin/bash\nif [ -f test.txt ]; then\n    echo \"存在\"\nelse\n    echo \"不存在\"\nfi"},{"id":"dce98e4a","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：使用 for 循环计算 1 到 100 的和并输出。","a":"#!/bin/bash\nsum=0\nfor i in $(seq 1 100); do\n    sum=$((sum + i))\ndone\necho \"1到100的和为: $sum\""},{"id":"c1357efd","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：接收一个整数参数 n，用 while 循环输出 1~n 中所有偶数；若未提供参数，则提示用法并以状态 1 退出。","a":"#!/bin/bash\nif [ $# -ne 1 ]; then\n    echo \"用法: $0 n\"\n    exit 1\nfi\ni=1\nwhile [ $i -le $1 ]; do\n    if [ $((i % 2)) -eq 0 ]; then\n        echo $i\n    fi\n    i=$((i + 1))\ndone"},{"id":"6c025cf2","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：从键盘读入一个分数，按 90 以上\"优秀\"、80~89\"良好\"、60~79\"及格\"、其余\"不及格\"输出评语（使用 if 或 case）。","a":"#!/bin/bash\nread -p \"请输入分数: \" s\nif [ $s -ge 90 ]; then\n    echo \"优秀\"\nelif [ $s -ge 80 ]; then\n    echo \"良好\"\nelif [ $s -ge 60 ]; then\n    echo \"及格\"\nelse\n    echo \"不及格\"\nfi"},{"id":"cbd6c9cd","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：使用 case 语句根据输入的字符 y/Y 输出 \"确认\"，n/N 输出 \"取消\"，其他输出 \"无效输入\"。","a":"#!/bin/bash\nread -p \"是否继续(y/n)? \" ch\ncase $ch in\n    y|Y) echo \"确认\" ;;\n    n|N) echo \"取消\" ;;\n    *)   echo \"无效输入\" ;;\nesac"},{"id":"5b36f87e","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 函数 add，接收两个整数参数并输出它们的和，然后调用该函数计算 3 和 5 的和。","a":"#!/bin/bash\nadd() {\n    echo $(( $1 + $2 ))\n}\nresult=$(add 3 5)\necho \"3 + 5 = $result\""},{"id":"5a50794f","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：统计当前目录下普通文件和子目录的个数，分别输出。","a":"#!/bin/bash\nfiles=0\ndirs=0\nfor f in *; do\n    if [ -f \"$f\" ]; then\n        files=$((files + 1))\n    elif [ -d \"$f\" ]; then\n        dirs=$((dirs + 1))\n    fi\ndone\necho \"普通文件: $files 个\"\necho \"目录: $dirs 个\""},{"id":"de9970da","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：判断用户输入的整数是否为素数（大于1，仅能被1和自身整除）。","a":"#!/bin/bash\nread -p \"请输入一个整数: \" n\nif [ $n -lt 2 ]; then\n    echo \"$n 不是素数\"\n    exit 0\nfi\nis_prime=1\ni=2\nwhile [ $((i * i)) -le $n ]; do\n    if [ $((n % i)) -eq 0 ]; then\n        is_prime=0\n        break\n    fi\n    i=$((i + 1))\ndone\nif [ $is_prime -eq 1 ]; then\n    echo \"$n 是素数\"\nelse\n    echo \"$n 不是素数\"\nfi"},{"id":"41fb4b4a","t":"p","ch":3,"tp":"函数、数组与重定向","q":"编写 Shell 脚本：把当前目录下所有 .txt 文件复制到 backup 目录中（若 backup 不存在则先创建），并输出复制的文件个数。","a":"#!/bin/bash\n[ -d backup ] || mkdir backup\ncount=0\nfor f in *.txt; do\n    if [ -f \"$f\" ]; then\n        cp \"$f\" backup/\n        count=$((count + 1))\n    fi\ndone\necho \"共复制 $count 个文件\""},{"id":"73a8b6ef","t":"p","ch":3,"tp":"函数、数组与重定向","q":"写出一行命令：把命令 ls /etc 的标准输出追加到 out.log，错误输出丢弃。","a":"ls /etc >> out.log 2>/dev/null"},{"id":"52356c57","t":"f","ch":4,"tp":"文件类型与 inode","q":"在 ls -l 输出中，目录文件的类型字符是______，符号链接是______。","a":[["d"],["l"]],"e":"- 普通文件；b 块设备；c 字符设备；p 命名管道；s 套接字。"},{"id":"1fed14c0","t":"f","ch":4,"tp":"文件类型与 inode","q":"Linux 中一切皆文件，硬件设备在______目录下以设备文件形式出现。","a":[["/dev"]],"e":"如 /dev/sda、/dev/tty。"},{"id":"412c6816","t":"c","ch":4,"tp":"文件类型与 inode","q":"在 ls -l 的输出中，第一个字符为 - 表示该文件是（  ）。","a":0,"o":["普通文件","目录","符号链接","块设备"],"e":"- 普通文件。"},{"id":"3e34f679","t":"c","ch":4,"tp":"文件类型与 inode","q":"inode 中不包含的信息是（  ）。","a":2,"o":["文件大小","文件权限","文件名","数据块位置"],"e":"文件名存放在目录项中。"},{"id":"e62beac9","t":"c","ch":4,"tp":"文件类型与 inode","q":"一个文件系统中 inode 数量耗尽但磁盘空间尚有时，将会出现（  ）。","a":1,"o":["仍可创建任意多文件","不能再创建新文件","文件自动合并","系统重启"],"e":"inode 数量在格式化时固定，用完则无法新建文件，可用 df -i 查看。"},{"id":"458b1fc3","t":"c","ch":4,"tp":"文件类型与 inode","q":"下列关于 Linux 目录的叙述，正确的是（  ）。","a":0,"o":["目录是一种特殊文件，其内容是目录项列表","目录不是文件","目录不占用 inode","目录内容为文件数据"],"e":"目录是特殊的文件，也占用 inode。"},{"id":"4c6dc90f","t":"j","ch":4,"tp":"文件类型与 inode","q":"Linux 中 /dev/sda 属于块设备文件。","a":true,"e":"磁盘是块设备。"},{"id":"81bbf4b1","t":"j","ch":4,"tp":"文件类型与 inode","q":"Linux 的文件扩展名决定文件的类型。","a":false,"e":"类型由 inode 中的类型位决定，扩展名只是习惯。"},{"id":"cb3fdee1","t":"s","ch":4,"tp":"文件类型与 inode","q":"简述 Linux 系统中 inode 的作用及其存储的信息。（10分）","a":"1. 作用：inode（索引节点）是文件系统中描述文件元数据的数据结构，每个文件对应一个 inode，通过 inode 号标识；内核通过 inode 找到文件数据块。\n2. 存储信息：文件类型与权限、属主 UID 和属组 GID、文件大小、三个时间戳（atime、mtime、ctime）、硬链接数、指向数据块的指针（块地址）。\n3. 注意：inode 不存储文件名，文件名存放于目录项（目录文件）中，目录项建立\"文件名—inode 号\"对应。"},{"id":"7526d00b","t":"f","ch":4,"tp":"权限管理","q":"文件权限 rwxr-xr-- 用数字表示为______。","a":[["754"]],"e":"rwx=7，r-x=5，r--=4。"},{"id":"c7068807","t":"f","ch":4,"tp":"权限管理","q":"执行 chmod u+x a.sh 后，______（所有者/属组/其他）获得了执行权限。","a":[["所有者","属主","用户","u"]],"e":"u=user(所有者)，g=group，o=others，a=all。"},{"id":"8bd33555","t":"f","ch":4,"tp":"权限管理","q":"对目录而言，______权限决定是否可以进入目录（cd）。","a":[["x","执行","可执行"]],"e":"目录的 r 允许列出目录内容，w 允许在目录中创建/删除文件，x 允许进入/访问。"},{"id":"aaa4cb11","t":"c","ch":4,"tp":"权限管理","q":"命令 chmod 644 file 后，file 的权限是（  ）。","a":1,"o":["rwxr--r--","rw-r--r--","rw-rw-r--","r--r--r--"],"e":"6=rw-，4=r--，4=r--。"},{"id":"18ccfa6","t":"c","ch":4,"tp":"权限管理","q":"命令 chmod g-w file 的含义是（  ）。","a":1,"o":["为属组增加写权限","去除属组的写权限","去除属主的写权限","去除其他用户写权限"],"e":"g=group，-w 去掉写。"},{"id":"4f521c62","t":"c","ch":4,"tp":"权限管理","q":"umask 值为 077 时，新建文件的默认权限是（  ）。","a":0,"o":["600","700","644","666"],"e":"文件 666-077=600。"},{"id":"5d07490","t":"c","ch":4,"tp":"权限管理","q":"用户对目录具有 w 权限而没有 x 权限，则（  ）。","a":1,"o":["可以在目录中创建文件","一般不能在其中创建或删除文件（因为无法进入）","可以进入目录","等于 r 权限"],"e":"对目录的写操作通常需要 w 和 x 同时具备。"},{"id":"8e82d2ef","t":"c","ch":4,"tp":"权限管理","q":"SUID 的作用是（  ）。","a":0,"o":["执行该程序时以文件所有者的身份运行","执行时以组身份运行","文件不可被删除","文件加密"],"e":"如 /usr/bin/passwd 带 s 位，使普通用户能修改 /etc/shadow。"},{"id":"a4a6ec3c","t":"c","ch":4,"tp":"权限管理","q":"要使一个脚本 test.sh 能被所有者执行，最合适的命令是（  ）。","a":0,"o":["chmod u+x test.sh","chmod u-x test.sh","chown u+x test.sh","chgrp x test.sh"],"e":"赋予所有者执行权限。"},{"id":"b97c8739","t":"j","ch":4,"tp":"权限管理","q":"目录的 x 权限表示可以进入该目录。","a":true,"e":"没有 x 无法 cd 或访问其中文件。"},{"id":"f07afa2a","t":"j","ch":4,"tp":"权限管理","q":"普通用户可以用 chown 把自己的文件改成别人的。","a":false,"e":"改属主通常需要 root 权限。"},{"id":"b145829b","t":"j","ch":4,"tp":"权限管理","q":"文件的权限和文件所在目录的权限无关，只与文件自身有关。","a":false,"e":"删除文件、重命名取决于所在目录的 w 与 x 权限。"},{"id":"c128c510","t":"s","ch":4,"tp":"权限管理","q":"说明 Linux 文件权限的组成（以 -rwxr-xr-- 为例），并写出 chmod 的数字法和符号法各一例。（8分）","a":"1. 共 10 个字符：第1位为文件类型（- 普通文件）；第2~4位为属主权限 rwx；第5~7位为属组权限 r-x；第8~10位为其他用户权限 r--。\n2. 数值：r=4，w=2，x=1；rwxr-xr-- = 754。\n3. 数字法：chmod 754 file；符号法：chmod u=rwx,g=rx,o=r file（或 chmod g-w,o+r file）。"},{"id":"ddec34d1","t":"f","ch":4,"tp":"硬链接与软链接","q":"硬链接与原文件共享同一个______号。","a":[["inode"]],"e":"硬链接本质是目录项指向同一 inode。"},{"id":"d73056ff","t":"f","ch":4,"tp":"硬链接与软链接","q":"硬链接______（能/不能）跨文件系统，______（能/不能）对目录创建。","a":[["不能"],["不能"]],"e":"软链接则可跨文件系统，也可链接目录。"},{"id":"6fbf8f8f","t":"c","ch":4,"tp":"硬链接与软链接","q":"下列关于软链接的叙述，错误的是（  ）。","a":2,"o":["有自己的 inode","可以跨文件系统","原文件删除后软链接仍然有效","可以指向目录"],"e":"原文件删除后软链接成为悬空链接（dangling link）。"},{"id":"263458e5","t":"c","ch":4,"tp":"硬链接与软链接","q":"文件 a 有 1 个硬链接，执行 ln a b 后，a 的链接数变为（  ）。","a":1,"o":["1","2","3","0"],"e":"链接数加 1。"},{"id":"360742af","t":"c","ch":4,"tp":"硬链接与软链接","q":"ls -l 中显示 lrwxrwxrwx 1 root root 9 … link -> /etc/hosts，表示 link 是（  ）。","a":1,"o":["硬链接","软链接（符号链接）","目录","设备"],"e":"l 开头，-> 指向目标。"},{"id":"fdbf56b0","t":"j","ch":4,"tp":"硬链接与软链接","q":"软链接可以跨越不同的文件系统。","a":true,"e":"软链接保存的是路径字符串。"},{"id":"f13c98b","t":"j","ch":4,"tp":"硬链接与软链接","q":"ln 命令默认创建软链接。","a":false,"e":"默认是硬链接，ln -s 才是软链接。"},{"id":"8e393d80","t":"s","ch":4,"tp":"硬链接与软链接","q":"简述硬链接和软链接的区别。（15分）","a":"1. 硬链接：①与原文件共享同一个 inode（本质是同一文件的另一个目录项）；②不能跨文件系统；③不能对目录创建；④删除原文件不影响硬链接，只要链接数>0，数据就保留；⑤命令 ln src dst。\n2. 软链接（符号链接）：①是一个独立的特殊文件，有自己的 inode，内容为目标路径；②可以跨文件系统；③可以链接目录；④删除原文件后，软链接失效成为悬空链接；⑤命令 ln -s src dst。"},{"id":"41eca774","t":"f","ch":4,"tp":"文件系统类型与挂载","q":"将设备挂载到目录的命令是______，卸载的命令是______。","a":[["mount"],["umount"]],"e":"注意是 umount，不是 unmount。"},{"id":"5de89312","t":"f","ch":4,"tp":"文件系统类型与挂载","q":"VFS 的全称是______，它为各种文件系统提供统一的接口。","a":[["虚拟文件系统","Virtual File System"]],"e":"使应用程序用同样的系统调用访问不同文件系统。"},{"id":"d32e52e2","t":"f","ch":4,"tp":"文件系统类型与挂载","q":"检查并修复文件系统的命令是______。","a":[["fsck"]],"e":"应在文件系统未挂载时执行。"},{"id":"beab790f","t":"c","ch":4,"tp":"文件系统类型与挂载","q":"下列命令中，用于显示磁盘分区空间使用情况的是（  ）。","a":1,"o":["du","df","ls","fdisk -l"],"e":"df = disk free。"},{"id":"ecceee44","t":"c","ch":4,"tp":"文件系统类型与挂载","q":"挂载 U 盘分区 /dev/sdb1 到 /mnt/usb 的命令是（  ）。","a":0,"o":["mount /dev/sdb1 /mnt/usb","mount /mnt/usb /dev/sdb1","umount /dev/sdb1 /mnt/usb","link /dev/sdb1 /mnt/usb"],"e":"mount 设备 挂载点。"},{"id":"15cf7c24","t":"c","ch":4,"tp":"文件系统类型与挂载","q":"下列关于 Linux 支持文件系统的叙述，正确的是（  ）。","a":1,"o":["只支持 ext 系列","通过 VFS 可同时支持多种文件系统","不能访问 FAT 格式的 U 盘","每增加一种文件系统都必须重写应用程序"],"e":"VFS 屏蔽了差异，应用程序无需修改即可访问不同文件系统。"},{"id":"535fb840","t":"c","ch":4,"tp":"文件系统类型与挂载","q":"/proc 文件系统的特点是（  ）。","a":1,"o":["存放在硬盘中","是内存中的虚拟文件系统，反映内核和进程信息","存放用户文件","保存日志"],"e":"如 /proc/cpuinfo。"},{"id":"65690069","t":"j","ch":4,"tp":"文件系统类型与挂载","q":"挂载点必须是一个已经存在的目录。","a":true,"e":"mount 的挂载点应是已存在的目录，挂载后原目录内容被隐藏。"},{"id":"b791aebe","t":"j","ch":4,"tp":"文件系统类型与挂载","q":"df 命令用于统计某个目录占用的磁盘空间。","a":false,"e":"df 显示文件系统的总量/已用/可用；统计目录用 du。"},{"id":"483a8770","t":"s","ch":4,"tp":"文件系统类型与挂载","q":"简述 VFS（虚拟文件系统）的作用和主要组成对象。（10分）","a":"1. 作用：VFS 是内核中的一个抽象层，向上为应用程序提供统一的文件操作接口（open/read/write/close 等系统调用），向下屏蔽 ext4、XFS、FAT、NTFS、NFS、proc 等不同文件系统的差异，使 Linux 能同时支持多种文件系统。\n2. 主要对象：\n   - 超级块（superblock）：描述已挂载文件系统的整体信息；\n   - 索引节点（inode）：描述文件的元数据；\n   - 目录项（dentry）：描述目录层次中的文件名与 inode 的对应，加速路径查找；\n   - 文件对象（file）：描述进程已打开的文件。"},{"id":"5e880fd1","t":"f","ch":4,"tp":"文件 I/O 系统调用","q":"文件描述符是一个______（负数/非负整数），open 成功返回最小的未使用的描述符。","a":[["非负整数","非负","整数"]],"e":"open 失败返回 -1。"},{"id":"48afbf24","t":"f","ch":4,"tp":"文件 I/O 系统调用","q":"获取文件元信息（大小、权限、inode 等）的系统调用是______，对已打开的文件描述符操作的是______。","a":[["stat"],["fstat"]],"e":"lstat 对符号链接本身获取信息。"},{"id":"ec0aa2ce","t":"f","ch":4,"tp":"文件 I/O 系统调用","q":"出错时，库函数 perror() 根据全局变量______输出错误描述。","a":[["errno"]],"e":"需包含 <errno.h>/<stdio.h>。"},{"id":"e42f2fa2","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"open(\"a.txt\", O_WRONLY|O_CREAT|O_TRUNC, 0644) 的含义是（  ）。","a":1,"o":["只读打开","只写打开，不存在则创建，存在则清空","读写追加","只写追加"],"e":"O_TRUNC 清空原内容。"},{"id":"79a55b3d","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"read(fd, buf, 100) 返回 0，表示（  ）。","a":1,"o":["出错","已到达文件末尾","读到 100 字节","文件未打开"],"e":"0 表示 EOF，-1 表示错误。"},{"id":"286718cd","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"关于标准输入、标准输出、标准错误的文件描述符，正确的是（  ）。","a":0,"o":["0、1、2","1、2、3","2、1、0","3、4、5"],"e":"STDIN=0，STDOUT=1，STDERR=2。"},{"id":"3e67d07a","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"语句 dup2(fd, 1) 的作用是（  ）。","a":1,"o":["关闭 fd","使标准输出重定向到 fd 所指文件","使 fd 指向标准输入","创建管道"],"e":"dup2 将文件描述符 1 变成 fd 的副本。"},{"id":"efeb4e7e","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"标准输出连接到终端时，stdout 默认是（  ）。","a":1,"o":["无缓冲","行缓冲","全缓冲","不可缓冲"],"e":"连接文件或管道时是全缓冲；stderr 无缓冲。"},{"id":"91e1f62b","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"在 C 语言中，判断 st_mode 是否是目录的宏是（  ）。","a":0,"o":["S_ISDIR(st_mode)","S_ISREG(st_mode)","S_ISLNK(st_mode)","S_ISFIFO(st_mode)"],"e":"S_ISREG 普通文件，S_ISDIR 目录。"},{"id":"89ef665c","t":"c","ch":4,"tp":"文件 I/O 系统调用","q":"fflush(stdout) 的作用是（  ）。","a":1,"o":["关闭 stdout","将用户缓冲区中的数据立即写出","清屏","读取输入"],"e":"强制刷新缓冲区。"},{"id":"e6d487a","t":"j","ch":4,"tp":"文件 I/O 系统调用","q":"read 返回 0 表示发生错误。","a":false,"e":"返回 0 表示 EOF，错误返回 -1。"},{"id":"2595898","t":"j","ch":4,"tp":"文件 I/O 系统调用","q":"标准 I/O 库函数 fopen 返回文件描述符（整数）。","a":false,"e":"fopen 返回 FILE* 指针；fileno(fp) 可取得描述符。"},{"id":"6860bc7d","t":"j","ch":4,"tp":"文件 I/O 系统调用","q":"lseek 可以使文件读写位置超出文件末尾，形成\"空洞\"文件。","a":true,"e":"空洞部分读出为 0，不占磁盘块。"},{"id":"180198e4","t":"j","ch":4,"tp":"文件 I/O 系统调用","q":"子进程会继承父进程已打开的文件描述符。","a":true,"e":"fork 后共享同一个打开文件表项（含偏移量）。"},{"id":"3d2aa442","t":"s","ch":4,"tp":"文件 I/O 系统调用","q":"比较系统调用 I/O 与标准 I/O 库（fopen/fread/fwrite）的区别。（8分）","a":"1. 层次：系统调用直接进入内核（open/read/write），返回文件描述符 int；标准 I/O 是 C 库函数，使用 FILE* 流。\n2. 缓冲：系统调用无用户态缓冲（每次调用进入内核）；标准 I/O 带用户缓冲（全缓冲/行缓冲/无缓冲），能减少系统调用次数，需 fflush 才立即写出。\n3. 可移植性：标准 I/O 为 ISO C 标准，可移植；系统调用是 POSIX/平台特有。\n4. 功能：标准 I/O 提供格式化输入输出（printf/scanf）、按行读写等；系统调用可用于设备、管道、套接字及底层控制（lseek、fcntl）。"},{"id":"d7b297a9","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"使用系统调用 open/read/write 编写 C 程序，把文件 src.txt 复制为 dst.txt。","a":"#include <stdio.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main(void)\n{\n    int in = open(\"src.txt\", O_RDONLY);\n    if (in < 0) { perror(\"open src\"); return 1; }\n    int out = open(\"dst.txt\", O_WRONLY | O_CREAT | O_TRUNC, 0644);\n    if (out < 0) { perror(\"open dst\"); close(in); return 1; }\n\n    char buf[1024];\n    ssize_t n;\n    while ((n = read(in, buf, sizeof(buf))) > 0) {\n        if (write(out, buf, n) != n) { perror(\"write\"); break; }\n    }\n    close(in);\n    close(out);\n    return 0;\n}"},{"id":"9ab17617","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"编写 C 程序，使用 opendir/readdir/closedir 列出当前目录下所有文件名。","a":"#include <stdio.h>\n#include <dirent.h>\n\nint main(void)\n{\n    DIR *dp = opendir(\".\");\n    if (dp == NULL) { perror(\"opendir\"); return 1; }\n    struct dirent *entry;\n    while ((entry = readdir(dp)) != NULL) {\n        printf(\"%s\\n\", entry->d_name);\n    }\n    closedir(dp);\n    return 0;\n}"},{"id":"f671628a","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"编写 C 程序，利用 lseek 求文件 a.txt 的大小并输出。","a":"#include <stdio.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main(void)\n{\n    int fd = open(\"a.txt\", O_RDONLY);\n    if (fd < 0) { perror(\"open\"); return 1; }\n    off_t size = lseek(fd, 0, SEEK_END);\n    printf(\"文件大小: %ld 字节\\n\", (long)size);\n    close(fd);\n    return 0;\n}"},{"id":"cd004cf9","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"编写 C 程序，使用 dup2 把标准输出重定向到文件 out.txt，然后用 printf 输出一行文字（该行应写入 out.txt）。","a":"#include <stdio.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main(void)\n{\n    int fd = open(\"out.txt\", O_WRONLY | O_CREAT | O_TRUNC, 0644);\n    if (fd < 0) { perror(\"open\"); return 1; }\n    dup2(fd, STDOUT_FILENO);   /* 1 号描述符现在指向 out.txt */\n    close(fd);\n    printf(\"Hello, redirected output!\\n\");\n    fflush(stdout);\n    return 0;\n}"},{"id":"ca01ded9","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"写出完成以下操作的命令：①将 file.txt 权限设为所有者可读写执行、组和其他用户只读；②创建 file.txt 的硬链接 hardlink.txt；③创建软链接 softlink.txt；④查看当前目录各文件占用空间；⑤查看磁盘空间使用情况；⑥把 file.txt 的属主改为 zhang、属组改为 staff。","a":"① chmod 744 file.txt\n② ln file.txt hardlink.txt\n③ ln -s file.txt softlink.txt\n④ du -sh *\n⑤ df -h\n⑥ chown zhang:staff file.txt   （需 root）"},{"id":"e092877c","t":"p","ch":4,"tp":"文件 I/O 系统调用","q":"写出命令：①查看 file.txt 的 inode 号；②查看 file.txt 的详细元信息；③将 /dev/sdb1 格式化为 ext4；④将 /dev/sdb1 挂载到 /mnt/data；⑤卸载它。","a":"① ls -i file.txt\n② stat file.txt\n③ mkfs.ext4 /dev/sdb1     （或 mkfs -t ext4 /dev/sdb1）\n④ mount /dev/sdb1 /mnt/data\n⑤ umount /mnt/data"},{"id":"3c2d2e5b","t":"f","ch":5,"tp":"进程概念与状态","q":"Linux 内核用______结构体（task_struct）描述一个进程，相当于进程控制块 PCB。","a":[["task_struct","PCB","进程控制块"]],"e":"保存 PID、状态、寄存器、打开文件等信息。"},{"id":"e4370635","t":"f","ch":5,"tp":"进程概念与状态","q":"在 ps 的 STAT 列中，R 表示运行，S 表示可中断睡眠，T 表示停止，Z 表示______。","a":[["僵尸","僵尸进程","zombie"]],"e":"D 为不可中断睡眠（常见于等待磁盘 I/O）。"},{"id":"2506b58d","t":"c","ch":5,"tp":"进程概念与状态","q":"Linux 中描述进程的数据结构是（  ）。","a":0,"o":["task_struct","struct proc_t","PCB.h","inode"],"e":"task_struct 即 Linux 的 PCB。"},{"id":"39025349","t":"c","ch":5,"tp":"进程概念与状态","q":"ps 命令显示的进程状态中，Z 表示（  ）。","a":2,"o":["运行","停止","僵尸","睡眠"],"e":"Z = zombie。"},{"id":"d276bbce","t":"c","ch":5,"tp":"进程概念与状态","q":"进程从运行态转为就绪态的原因通常是（  ）。","a":0,"o":["时间片用完","等待 I/O","程序结束","等待信号量"],"e":"时间片耗尽被抢占，仍可运行，所以回到就绪队列。"},{"id":"35eb70b","t":"c","ch":5,"tp":"进程概念与状态","q":"下列关于进程和线程的叙述，错误的是（  ）。","a":3,"o":["进程是资源分配的基本单位","线程是 CPU 调度的基本单位","同一进程的多个线程共享地址空间","每个线程拥有独立的地址空间"],"e":"线程共享所属进程的地址空间。"},{"id":"dc708f00","t":"j","ch":5,"tp":"进程概念与状态","q":"进程控制块（PCB）是进程存在的唯一标志。","a":true,"e":"内核通过 PCB 感知和管理进程。"},{"id":"f78544d1","t":"j","ch":5,"tp":"进程概念与状态","q":"Linux 中所有进程都由 1 号进程直接创建。","a":false,"e":"进程由父进程创建，形成进程树；1 号进程是祖先，不是所有进程的直接父进程。"},{"id":"44ebef1c","t":"f","ch":5,"tp":"进程管理命令","q":"动态实时查看进程资源占用的命令是______。","a":[["top"]],"e":"按 q 退出，P 按 CPU 排序，M 按内存排序。"},{"id":"c410c002","t":"f","ch":5,"tp":"进程管理命令","q":"查看当前 Shell 的后台作业用______命令，将后台作业调到前台用______命令。","a":[["jobs"],["fg"]],"e":"bg 让停止的作业在后台继续运行。"},{"id":"2ececa66","t":"f","ch":5,"tp":"进程管理命令","q":"按进程名称终止进程的命令是______。","a":[["killall","pkill"]],"e":"killall name / pkill name。"},{"id":"ede52b99","t":"c","ch":5,"tp":"进程管理命令","q":"要把进程 1234 强制终止，应使用（  ）。","a":1,"o":["kill 1234","kill -9 1234","kill -1 1234","kill -15 1234"],"e":"-9（SIGKILL）无法被忽略。"},{"id":"3e2646b4","t":"c","ch":5,"tp":"进程管理命令","q":"nice 值的取值范围是（  ）。","a":1,"o":["0~99","-20~19","-100~100","1~10"],"e":"数值越小优先级越高，只有 root 可设负值。"},{"id":"64ca77bb","t":"c","ch":5,"tp":"进程管理命令","q":"命令 sleep 60 & 的作用是（  ）。","a":0,"o":["让 sleep 在后台运行","同时运行两次","杀死 sleep","循环"],"e":"& 后台运行，立即返回提示符。"},{"id":"6480691d","t":"c","ch":5,"tp":"进程管理命令","q":"要查看名为 nginx 的进程，较常用的组合是（  ）。","a":0,"o":["ps -ef | grep nginx","cat nginx","ls nginx","top nginx -x"],"e":"ps 输出通过 grep 过滤。"},{"id":"f9b68630","t":"c","ch":5,"tp":"进程管理命令","q":"下列命令中能够显示进程树的是（  ）。","a":0,"o":["pstree","ptree -x","ps -t","tree -p"],"e":"pstree 以树形显示。"},{"id":"6f201443","t":"j","ch":5,"tp":"进程管理命令","q":"nice 值越大，进程优先级越高。","a":false,"e":"nice 值越小优先级越高。"},{"id":"2ad82545","t":"j","ch":5,"tp":"进程管理命令","q":"Ctrl+C 可终止前台进程，Ctrl+Z 可挂起前台进程。","a":true,"e":"SIGINT 与 SIGTSTP。"},{"id":"789c52d3","t":"s","ch":5,"tp":"进程管理命令","q":"列举常用的进程管理命令（至少 6 个）并说明作用。（8分）","a":"1. ps：查看进程快照（ps -ef、ps aux）；\n2. top：动态实时显示进程资源占用；\n3. pstree：树状显示父子关系；\n4. kill / killall / pkill：向进程发送信号，终止进程（kill -9 强制）；\n5. jobs / bg / fg：查看、后台运行、前台调出作业；\n6. nice / renice：设置与调整进程优先级；\n7. nohup：使进程忽略挂起信号，退出登录后仍运行；& 使命令后台运行。"},{"id":"e9ca035c","t":"f","ch":5,"tp":"fork / vfork / exec","q":"fork() 在父进程中返回______，在子进程中返回______，失败返回______。","a":[["子进程PID","子进程ID","子进程的PID","子进程的进程号"],["0"],["-1"]],"e":"据此区分父子进程。"},{"id":"2083c007","t":"f","ch":5,"tp":"fork / vfork / exec","q":"exec 函数族的作用是用______替换当前进程的代码段、数据段等，进程 PID______（改变/不变）。","a":[["新程序","新的程序"],["不变"]],"e":"exec 成功后不返回。"},{"id":"64785050","t":"f","ch":5,"tp":"fork / vfork / exec","q":"在 C 程序中执行 shell 命令的库函数是______，其内部通过 fork + exec + wait 实现。","a":[["system"]],"e":"system(\"ls -l\")。"},{"id":"ec27bed4","t":"c","ch":5,"tp":"fork / vfork / exec","q":"fork() 函数在子进程中返回（  ）。","a":0,"o":["0","-1","子进程的 PID","父进程的 PID"],"e":"据此判断自己是子进程。"},{"id":"ba7b1046","t":"c","ch":5,"tp":"fork / vfork / exec","q":"程序 fork(); fork(); printf(\"A\\n\"); 运行后，输出 A 的次数是（  ）。","a":3,"o":["1","2","3","4"],"e":"两次 fork 共有 4 个进程，每个都执行 printf。"},{"id":"3bc28f97","t":"c","ch":5,"tp":"fork / vfork / exec","q":"程序 for(i=0;i<3;i++) fork(); 执行结束后，总进程数（含原进程）是（  ）。","a":3,"o":["3","6","7","8"],"e":"每次 fork 使进程数翻倍：2^3=8。"},{"id":"d5ade38f","t":"c","ch":5,"tp":"fork / vfork / exec","q":"exec 族函数执行成功后（  ）。","a":2,"o":["返回 0","返回子进程 PID","不返回，原程序被新程序取代","继续执行 exec 后的语句"],"e":"只有失败时才返回 -1。"},{"id":"5cdaeffd","t":"c","ch":5,"tp":"fork / vfork / exec","q":"vfork() 与 fork() 的主要区别是（  ）。","a":1,"o":["vfork 创建线程","vfork 子进程与父进程共享地址空间，父进程被挂起","vfork 不创建子进程","vfork 不返回"],"e":"vfork 子进程应立即 exec 或 _exit。"},{"id":"a197232e","t":"c","ch":5,"tp":"fork / vfork / exec","q":"写时复制（COW）技术的主要目的是（  ）。","a":0,"o":["提高 fork() 的效率，减少不必要的内存复制","提高 exec 效率","提高 wait 效率","提高 exit 效率"],"e":"fork 后暂不复制物理页，写时才复制。"},{"id":"c1bc8758","t":"c","ch":5,"tp":"fork / vfork / exec","q":"程序 int x=10; if(fork()==0){x+=5; printf(\"%d\\n\",x);} else {wait(NULL); printf(\"%d\\n\",x);} 的输出依次为（  ）。","a":1,"o":["15 15","15 10","10 15","10 10"],"e":"父子进程有各自的数据副本：子进程 x=15，父进程 x 仍为 10；父进程 wait 保证子先输出。"},{"id":"35b88d9c","t":"c","ch":5,"tp":"fork / vfork / exec","q":"程序 printf(\"hi\"); fork(); （无换行，未 fflush）运行到结束，屏幕上共输出 hi 的次数为（  ）。","a":1,"o":["1","2","0","不确定"],"e":"缓冲区中的 \"hi\" 被子进程复制，两个进程退出时各自刷新一次。"},{"id":"f0343000","t":"c","ch":5,"tp":"fork / vfork / exec","q":"exec 族函数中，e 后缀的含义是（  ）。","a":1,"o":["按 PATH 搜索","可以传递环境变量数组","参数为列表","结束"],"e":"如 execle、execve。"},{"id":"37e8b573","t":"j","ch":5,"tp":"fork / vfork / exec","q":"fork() 调用一次，返回两次。","a":true,"e":"父进程中返回子 PID，子进程中返回 0。"},{"id":"160e4162","t":"j","ch":5,"tp":"fork / vfork / exec","q":"exec 族函数会创建一个新的进程。","a":false,"e":"exec 不创建新进程，只是替换当前进程映像，PID 不变。"},{"id":"46544153","t":"j","ch":5,"tp":"fork / vfork / exec","q":"vfork 创建的子进程运行时，父进程被阻塞。","a":true,"e":"直到子进程 exec 或退出。"},{"id":"1999e587","t":"j","ch":5,"tp":"fork / vfork / exec","q":"execl(\"/bin/ls\",\"ls\",\"-l\",NULL); 成功后，该语句之后的代码仍会被执行。","a":false,"e":"成功时不返回，之后代码被覆盖。"},{"id":"758e0f6e","t":"s","ch":5,"tp":"fork / vfork / exec","q":"简述 fork() 函数的特点和返回值。（10分）","a":"1. 作用：创建一个与调用进程几乎相同的子进程（复制代码、数据、堆栈、打开的文件描述符等），采用写时复制。\n2. 特点：调用一次、返回两次；父子进程并发执行，顺序不确定；子进程有独立的 PID 和 PPID，数据相互独立。\n3. 返回值：父进程中返回子进程的 PID（>0）；子进程中返回 0；失败返回 -1（不创建子进程）。"},{"id":"7a75981","t":"s","ch":5,"tp":"fork / vfork / exec","q":"比较 fork 与 vfork 的区别。（8分）","a":"1. 地址空间：fork 子进程拥有父进程地址空间的副本（写时复制）；vfork 子进程共享父进程地址空间。\n2. 执行顺序：fork 父子进程顺序不确定；vfork 保证子进程先运行，父进程被阻塞，直到子进程调用 exec 或 _exit。\n3. 用途：fork 通用；vfork 用于子进程立即 exec 的场景，开销小，但子进程不得返回/修改共享数据，否则行为未定义。"},{"id":"a0c68d86","t":"f","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"从 wait 得到的 status 中，宏______用于判断子进程是否正常退出，宏______用于取退出码。","a":[["WIFEXITED"],["WEXITSTATUS"]],"e":"WIFSIGNALED 判断是否被信号终止。"},{"id":"4d1594b4","t":"f","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"main 函数中 return n 的效果相当于调用______(n)。","a":[["exit"]],"e":"在 main 中，return 等价于 exit。"},{"id":"ca785164","t":"c","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"僵尸进程是指（  ）。","a":1,"o":["正在运行的进程","已终止但父进程尚未回收其信息的进程","父进程已终止的进程","无法终止的进程"],"e":"Z 状态，占用进程表项。"},{"id":"5426155c","t":"c","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"清除僵尸进程的有效方法是（  ）。","a":1,"o":["对僵尸进程执行 kill -9","让其父进程调用 wait/waitpid，或终止其父进程","重启 shell","使用 nice"],"e":"僵尸已经死亡，kill 无效；父进程回收或父进程退出由 init 回收。"},{"id":"be7039c0","t":"c","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"下列关于 wait() 的叙述，正确的是（  ）。","a":1,"o":["如果没有子进程结束，wait 立即返回 0","wait 会阻塞父进程，直到某个子进程结束","wait 创建新进程","wait 只能等待指定子进程"],"e":"等待指定子进程用 waitpid。"},{"id":"18c1e958","t":"c","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"waitpid(-1, &st, WNOHANG) 的含义是（  ）。","a":1,"o":["阻塞等待任一子进程","非阻塞地检查任一子进程是否已结束","等待进程组","忽略子进程"],"e":"-1 表示任意子进程；无子进程结束时立即返回 0。"},{"id":"a4873d42","t":"c","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"下列语句中，哪一个会使调用它的进程立即终止而不做任何标准 I/O 清理？（  ）","a":2,"o":["exit(0)","return 0","_exit(0)","sleep(0)"],"e":"_exit 直接结束，不刷新缓冲区。"},{"id":"b04aa084","t":"j","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"僵尸进程会占用 CPU 资源，应及时清除。","a":false,"e":"僵尸进程不占 CPU，但占用进程表项和 PID。"},{"id":"cbf97773","t":"j","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"wait() 函数用于创建子进程。","a":false,"e":"wait 用于等待子进程结束，创建用 fork。"},{"id":"ef86df7f","t":"j","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"kill -9 可以直接清除僵尸进程。","a":false,"e":"僵尸已经终止，需父进程回收。"},{"id":"f0baf839","t":"j","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"main 函数中 return 与 exit 的效果相同。","a":true,"e":"main 返回时库会调用 exit。"},{"id":"10fe3730","t":"s","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"简述僵尸进程和孤儿进程的概念、危害和处理方法。（10分）","a":"1. 僵尸进程：子进程已终止，但父进程没有调用 wait/waitpid 读取其退出状态，子进程的 PCB 仍保留（状态 Z）。危害：占用进程表项和 PID，大量堆积会使系统无法创建新进程。处理：父进程调用 wait/waitpid；处理 SIGCHLD 信号；杀死父进程，让 init 回收。\n2. 孤儿进程：父进程先于子进程结束，子进程被 init(1号进程) 收养，由 init 回收，一般没有危害。"},{"id":"8a285ab4","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"编写 C 程序，使用 fork() 创建一个子进程，父子进程分别输出自己的 PID 和父进程 PID。","a":"#include <stdio.h>\n#include <unistd.h>\n#include <sys/types.h>\n\nint main(void)\n{\n    pid_t pid = fork();\n    if (pid < 0) {\n        perror(\"fork\");\n        return 1;\n    } else if (pid == 0) {\n        printf(\"子进程: PID=%d, PPID=%d\\n\", getpid(), getppid());\n    } else {\n        printf(\"父进程: PID=%d, 子进程PID=%d\\n\", getpid(), pid);\n    }\n    return 0;\n}"},{"id":"dbfaa2d","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"编写 C 程序：创建子进程，子进程使用 execl 执行 \"ls -l\"，父进程等待子进程结束后输出 \"done\"。","a":"#include <stdio.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\nint main(void)\n{\n    pid_t pid = fork();\n    if (pid < 0) {\n        perror(\"fork\");\n        return 1;\n    }\n    if (pid == 0) {\n        execl(\"/bin/ls\", \"ls\", \"-l\", (char *)NULL);\n        perror(\"execl\");     /* 只有失败才会执行到这里 */\n        _exit(1);\n    }\n    wait(NULL);\n    printf(\"done\\n\");\n    return 0;\n}"},{"id":"f0ef53e9","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"编写 C 程序：创建 3 个子进程，每个子进程输出自己的编号和 PID 后退出，父进程等待所有子进程结束。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\nint main(void)\n{\n    int i;\n    for (i = 1; i <= 3; i++) {\n        pid_t pid = fork();\n        if (pid < 0) {\n            perror(\"fork\");\n            exit(1);\n        }\n        if (pid == 0) {              /* 子进程 */\n            printf(\"子进程 %d, PID=%d\\n\", i, getpid());\n            exit(0);                 /* 防止子进程继续循环 fork */\n        }\n    }\n    for (i = 0; i < 3; i++)\n        wait(NULL);                  /* 回收 3 个子进程 */\n    printf(\"所有子进程已结束\\n\");\n    return 0;\n}"},{"id":"6481b058","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"编写 C 程序，制造一个僵尸进程：子进程立即退出，父进程睡眠 30 秒后才结束（期间可用 ps 看到 Z 状态）。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n\nint main(void)\n{\n    pid_t pid = fork();\n    if (pid < 0) {\n        perror(\"fork\");\n        return 1;\n    }\n    if (pid == 0) {\n        printf(\"子进程 %d 退出\\n\", getpid());\n        exit(0);                    /* 子进程先结束 */\n    }\n    printf(\"父进程 %d 睡眠中，不调用 wait\\n\", getpid());\n    sleep(30);                      /* 此期间 ps aux 可见子进程为 Z 状态 */\n    return 0;\n}"},{"id":"bcb2adbc","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"编写 C 程序，演示 fork 后父子进程的变量互不影响：全局变量 g=100，子进程把 g 改为 200 并输出，父进程等待后输出 g。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\nint g = 100;\n\nint main(void)\n{\n    pid_t pid = fork();\n    if (pid < 0) {\n        perror(\"fork\");\n        return 1;\n    }\n    if (pid == 0) {\n        g = 200;\n        printf(\"子进程: g=%d\\n\", g);     /* 200 */\n        exit(0);\n    }\n    wait(NULL);\n    printf(\"父进程: g=%d\\n\", g);         /* 仍为 100 */\n    return 0;\n}"},{"id":"a6334515","t":"p","ch":5,"tp":"wait / exit / 僵尸与孤儿","q":"写出命令：①后台运行 sleep 300；②查看后台作业；③把作业 1 调到前台；④查看名为 sleep 的进程；⑤强制终止 PID 为 4321 的进程；⑥以 nice 值 10 启动 ./a.out。","a":"① sleep 300 &\n② jobs\n③ fg %1\n④ ps -ef | grep sleep\n⑤ kill -9 4321\n⑥ nice -n 10 ./a.out"},{"id":"6bc41df8","t":"f","ch":6,"tp":"进程间通信概述","q":"System V IPC 包括消息队列、共享内存和______三种对象。","a":[["信号量"]],"e":"通过 key 值或 ID 标识。"},{"id":"54a75a09","t":"c","ch":6,"tp":"进程间通信概述","q":"下列 IPC 方式中速度最快的是（  ）。","a":2,"o":["管道","消息队列","共享内存","信号"],"e":"共享内存直接映射到进程地址空间。"},{"id":"ac08233d","t":"c","ch":6,"tp":"进程间通信概述","q":"查看系统中 System V IPC 对象的命令是（  ）。","a":0,"o":["ipcs","ipcls","ps ipc","show ipc"],"e":"ipcs 查看，ipcrm 删除。"},{"id":"33ee6c5f","t":"j","ch":6,"tp":"进程间通信概述","q":"不同进程的地址空间相互独立，所以它们之间不能直接共享变量。","a":true,"e":"需要借助 IPC。"},{"id":"32157e9d","t":"j","ch":6,"tp":"进程间通信概述","q":"System V IPC 对象会随创建它的进程退出自动销毁。","a":false,"e":"它们属于内核持久对象，必须显式删除。"},{"id":"15817884","t":"f","ch":6,"tp":"信号","q":"向指定进程发送信号的系统调用是______，进程向自己发送信号用______。","a":[["kill"],["raise"]],"e":"raise(sig) 等价于 kill(getpid(), sig)。"},{"id":"e01d6811","t":"f","ch":6,"tp":"信号","q":"使进程挂起直到收到一个信号的函数是______。","a":[["pause"]],"e":"收到信号并处理后 pause 返回 -1。"},{"id":"39e8c426","t":"f","ch":6,"tp":"信号","q":"信号 SIGKILL 和______不能被捕获、阻塞或忽略。","a":[["SIGSTOP"]],"e":"这两个信号保证管理员总能控制进程。"},{"id":"297f4bfb","t":"f","ch":6,"tp":"信号","q":"把信号处理方式设置为忽略，应使用 signal(sig, ______)。","a":[["SIG_IGN"]],"e":"SIG_DFL 恢复默认。"},{"id":"5f60b6bc","t":"c","ch":6,"tp":"信号","q":"下列信号中，Ctrl+C 产生的是（  ）。","a":0,"o":["SIGINT","SIGQUIT","SIGTSTP","SIGHUP"],"e":"SIGINT = 2。"},{"id":"38f00dc7","t":"c","ch":6,"tp":"信号","q":"signal(SIGINT, SIG_IGN) 的作用是（  ）。","a":1,"o":["恢复默认处理","忽略 SIGINT 信号","捕获信号","终止进程"],"e":"SIG_IGN 表示忽略。"},{"id":"5b6ff5c1","t":"c","ch":6,"tp":"信号","q":"kill(pid, 0) 的特殊用途是（  ）。","a":1,"o":["杀死进程","检查进程是否存在（不发送信号）","暂停进程","复制进程"],"e":"返回 0 表示进程存在且有权发信号。"},{"id":"ad88c7bd","t":"c","ch":6,"tp":"信号","q":"下列关于信号处理函数的叙述，正确的是（  ）。","a":1,"o":["信号处理函数由内核创建的新线程执行","信号到达时打断进程正常执行流程，转去执行处理函数，结束后返回","信号处理函数必须是 main 的子函数","信号处理函数不能有参数"],"e":"信号处理函数的原型为 void handler(int signo)。"},{"id":"c432b306","t":"c","ch":6,"tp":"信号","q":"Linux 中发送信号 SIGTERM 的命令是（  ）。","a":0,"o":["kill -15 pid","kill -9 pid","kill -2 pid","kill -19 pid"],"e":"-9 SIGKILL，-2 SIGINT，-19 SIGSTOP。"},{"id":"ba92760f","t":"c","ch":6,"tp":"信号","q":"信号 SIGPIPE 产生的典型情形是（  ）。","a":0,"o":["向没有读端的管道写数据","向管道读数据","管道已满","管道创建失败"],"e":"默认终止进程。"},{"id":"8e174bfa","t":"j","ch":6,"tp":"信号","q":"信号是一种异步通信机制。","a":true,"e":"进程无法预知信号何时到达。"},{"id":"495f7e0e","t":"j","ch":6,"tp":"信号","q":"进程收到 SIGINT 信号后默认会终止。","a":true,"e":"默认动作 Term。"},{"id":"3f238040","t":"j","ch":6,"tp":"信号","q":"一个进程只能向自己发送信号。","a":false,"e":"可以向其他进程发信号（权限允许时），使用 kill。"},{"id":"ffd323b1","t":"j","ch":6,"tp":"信号","q":"进程可以在信号处理函数中安全地调用任意库函数（如 printf、malloc）。","a":false,"e":"只有异步信号安全（async-signal-safe）的函数才可安全调用，write 是，printf 不是。"},{"id":"b1cd3c30","t":"s","ch":6,"tp":"信号","q":"简述 kill()、signal()、alarm()、pause() 四个函数的作用。（8分）","a":"1. kill(pid, sig)：向指定进程（或进程组）发送信号 sig。\n2. signal(sig, handler)：为信号 sig 注册处理函数（或 SIG_IGN/SIG_DFL）。\n3. alarm(n)：n 秒后向本进程发送 SIGALRM；n=0 取消定时器。\n4. pause()：挂起进程，直到捕获到一个信号并从处理函数返回。"},{"id":"e91c42cf","t":"f","ch":6,"tp":"管道与有名管道","q":"创建无名管道的系统调用是______，参数是一个含两个整数的数组 fd[2]。","a":[["pipe"]],"e":"fd[0] 读端，fd[1] 写端。"},{"id":"8c312b0a","t":"f","ch":6,"tp":"管道与有名管道","q":"管道是______（单向/双向）、先进先出的字节流，一端读另一端写。","a":[["单向（半双工）","单向","半双工"]],"e":"双向通信需要两个管道。"},{"id":"c78a4bae","t":"f","ch":6,"tp":"管道与有名管道","q":"管道的所有写端都关闭后，读端 read 返回______。","a":[["0"]],"e":"相当于文件结束 EOF。"},{"id":"7e3e5735","t":"c","ch":6,"tp":"管道与有名管道","q":"无名管道的特点是（  ）。","a":1,"o":["可以在任意两个进程间通信","只能用于有亲缘关系的进程，半双工","管道在磁盘文件系统中有名字","双向通信"],"e":"有名管道才可用于无亲缘关系的进程。"},{"id":"87e5421","t":"c","ch":6,"tp":"管道与有名管道","q":"当管道中无数据时，read 的行为是（  ）。","a":1,"o":["立即返回 0（只要写端仍打开）","阻塞等待数据（默认情况，写端仍打开时）","崩溃","返回 -1"],"e":"所有写端关闭后才返回 0。"},{"id":"7e086230","t":"c","ch":6,"tp":"管道与有名管道","q":"用 pipe 实现父子进程通信时，通常要（  ）。","a":0,"o":["父子进程各自关闭不用的那一端","父子都使用同一端","关闭全部描述符后再通信","子进程必须先 exec"],"e":"例如父写子读：父关 fd[0]，子关 fd[1]。"},{"id":"1ba4cb0e","t":"c","ch":6,"tp":"管道与有名管道","q":"下列命令中，可创建有名管道的是（  ）。","a":0,"o":["mkfifo f","mkdir f","pipe f","touch f"],"e":"mkfifo 创建命名管道文件，ls -l 显示类型 p。"},{"id":"67d3cc8b","t":"c","ch":6,"tp":"管道与有名管道","q":"下列关于 open 一个 FIFO 的描述，正确的是（  ）。","a":0,"o":["以只读方式 open 时，通常会阻塞直到另一进程以写方式打开","总是立即返回","不能 open","必须以读写方式打开"],"e":"默认阻塞，O_NONBLOCK 可避免阻塞。"},{"id":"1c941c57","t":"j","ch":6,"tp":"管道与有名管道","q":"无名管道可以用于任意两个进程之间的通信。","a":false,"e":"只适用于有亲缘关系的进程。"},{"id":"33f37a53","t":"j","ch":6,"tp":"管道与有名管道","q":"有名管道在文件系统中有对应的路径名，所以可以在无亲缘关系的进程间通信。","a":true,"e":"FIFO 以文件形式存在。"},{"id":"21b7495d","t":"j","ch":6,"tp":"管道与有名管道","q":"向读端已全部关闭的管道写数据会触发 SIGPIPE 信号。","a":true,"e":"默认动作终止进程。"},{"id":"fd68354d","t":"j","ch":6,"tp":"管道与有名管道","q":"mkfifo 命令创建的文件在磁盘上存储大量数据。","a":false,"e":"FIFO 文件只是文件系统中的入口，数据在内核缓冲区中。"},{"id":"31aaffc2","t":"s","ch":6,"tp":"管道与有名管道","q":"简述无名管道和有名管道的区别。（15分）","a":"1. 无名管道：①由 pipe() 创建，没有名字，不在文件系统中可见；②只能用于有亲缘关系的进程（如父子、兄弟），通过 fork 继承描述符；③生命周期随进程，所有描述符关闭后自动消失。\n2. 有名管道（FIFO）：①由 mkfifo 命令或 mkfifo() 函数创建，在文件系统中有路径名（类型 p）；②可用于任意两个无亲缘关系进程的通信，通过路径 open；③文件节点持久存在，需要手动 unlink/rm 删除。\n3. 共同点：都是半双工、先进先出的字节流；读空阻塞，写满阻塞；数据在内核缓冲区；写端全关则 read 返回 0；读端全关时写触发 SIGPIPE。"},{"id":"c5a0b688","t":"f","ch":6,"tp":"System V IPC","q":"创建共享内存的函数是______，把共享内存附加到进程地址空间的函数是______。","a":[["shmget"],["shmat"]],"e":"断开用 shmdt，控制/删除用 shmctl。"},{"id":"d0bc029e","t":"f","ch":6,"tp":"System V IPC","q":"ftok(path, id) 函数用于生成 System V IPC 所需的______。","a":[["key","键值","key值"]],"e":"key_t key。"},{"id":"6961ddf6","t":"f","ch":6,"tp":"System V IPC","q":"查看系统 IPC 资源的命令是______，删除指定 IPC 资源的命令是______。","a":[["ipcs"],["ipcrm"]],"e":"如 ipcrm -m shmid。"},{"id":"290869aa","t":"c","ch":6,"tp":"System V IPC","q":"消息队列中，msgrcv 通过消息的（  ）来选择接收哪类消息。","a":1,"o":["长度","类型 mtype","时间","优先级（无）"],"e":"msgtyp 为 0 取第一个，>0 取指定类型。"},{"id":"4072851f","t":"c","ch":6,"tp":"System V IPC","q":"shmat 函数的返回值是（  ）。","a":1,"o":["共享内存标识符","共享内存在进程地址空间中的起始地址","0","共享内存大小"],"e":"失败返回 (void *)-1。"},{"id":"3d2d3aaf","t":"c","ch":6,"tp":"System V IPC","q":"信号量的 P 操作含义是（  ）。","a":0,"o":["申请资源，信号量减 1，若无资源则阻塞","释放资源，信号量加 1","初始化信号量","删除信号量"],"e":"P 申请（wait），V 释放（signal/post）。"},{"id":"ee1c309e","t":"c","ch":6,"tp":"System V IPC","q":"消息队列相对于管道的优点是（  ）。","a":0,"o":["消息有类型，可按类型选择接收，且是面向记录的","速度比共享内存快","只能用于亲缘进程","读空时必须阻塞"],"e":"消息队列独立于进程，支持按类型读取。"},{"id":"5efba593","t":"c","ch":6,"tp":"System V IPC","q":"下列 IPC 方式中，需要使用 ftok 或 IPC_PRIVATE 获得 key 的是（  ）。","a":0,"o":["System V 消息队列、共享内存、信号量","无名管道","信号","有名管道"],"e":"System V IPC 用 key 标识对象；IPC_PRIVATE 创建私有对象。"},{"id":"8ba9eaf0","t":"j","ch":6,"tp":"System V IPC","q":"信号量主要用于进程间的同步与互斥。","a":true,"e":"本质上是计数器。"},{"id":"14bf801c","t":"j","ch":6,"tp":"System V IPC","q":"shmdt 函数会销毁共享内存段。","a":false,"e":"shmdt 只是分离；销毁用 shmctl(IPC_RMID)。"},{"id":"537d533b","t":"j","ch":6,"tp":"System V IPC","q":"信号量 P 操作使信号量加 1，V 操作使信号量减 1。","a":false,"e":"P：减 1（申请），V：加 1（释放）。"},{"id":"e4d2720b","t":"s","ch":6,"tp":"System V IPC","q":"比较管道、消息队列、共享内存三种 IPC 的特点。（10分）","a":"1. 管道：半双工字节流，简单；无名管道限于亲缘进程，有名管道可用于任意进程；读写需系统调用，有数据拷贝。\n2. 消息队列：面向消息（记录），带类型可选择接收；独立于进程存在；数据经内核拷贝，适合小量数据。\n3. 共享内存：映射同一块物理内存，不经内核拷贝，速度最快，适合大量数据；本身无同步，需配合信号量。"},{"id":"cf8a13ef","t":"p","ch":6,"tp":"System V IPC","q":"编写 C 程序：用 signal 捕获 SIGINT，收到信号后输出 \"Caught SIGINT\" 并退出程序。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <signal.h>\n#include <unistd.h>\n\nvoid handler(int sig)\n{\n    const char msg[] = \"Caught SIGINT\\n\";\n    write(STDOUT_FILENO, msg, sizeof(msg) - 1);\n    _exit(0);\n}\n\nint main(void)\n{\n    signal(SIGINT, handler);\n    printf(\"按 Ctrl+C 试试...\\n\");\n    while (1)\n        pause();\n    return 0;\n}"},{"id":"b9e3b32d","t":"p","ch":6,"tp":"System V IPC","q":"编写 C 程序：设置 alarm(3)，并用 signal 捕获 SIGALRM，在处理函数中输出 \"Time out\" 后退出。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <signal.h>\n#include <unistd.h>\n\nvoid on_alarm(int sig)\n{\n    printf(\"Time out\\n\");\n    exit(0);\n}\n\nint main(void)\n{\n    signal(SIGALRM, on_alarm);\n    alarm(3);\n    printf(\"3 秒后超时...\\n\");\n    while (1)\n        pause();\n    return 0;\n}"},{"id":"48e8266c","t":"p","ch":6,"tp":"System V IPC","q":"编写 C 程序：使用无名管道实现父子进程通信，父进程向子进程发送字符串 \"Hello\"，子进程接收并输出。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\nint main(void)\n{\n    int fd[2];\n    char buf[64];\n\n    if (pipe(fd) == -1) {\n        perror(\"pipe\");\n        return 1;\n    }\n    pid_t pid = fork();\n    if (pid < 0) {\n        perror(\"fork\");\n        return 1;\n    }\n    if (pid == 0) {                    /* 子进程：读 */\n        close(fd[1]);                  /* 关闭写端 */\n        ssize_t n = read(fd[0], buf, sizeof(buf) - 1);\n        if (n > 0) {\n            buf[n] = '\\0';\n            printf(\"子进程收到: %s\\n\", buf);\n        }\n        close(fd[0]);\n        exit(0);\n    }\n    close(fd[0]);                      /* 父进程：关闭读端 */\n    write(fd[1], \"Hello\", strlen(\"Hello\"));\n    close(fd[1]);\n    wait(NULL);\n    return 0;\n}"},{"id":"6e17f9c4","t":"p","ch":6,"tp":"System V IPC","q":"编写 C 程序：用 mkfifo 创建有名管道 /tmp/myfifo，写进程向其中写入 \"Hello FIFO\"（只给出写进程）。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n\nint main(void)\n{\n    const char *path = \"/tmp/myfifo\";\n    if (mkfifo(path, 0666) == -1) {\n        perror(\"mkfifo\");        /* 已存在时可忽略 EEXIST */\n    }\n    int fd = open(path, O_WRONLY);   /* 阻塞直到有读端 */\n    if (fd < 0) {\n        perror(\"open\");\n        return 1;\n    }\n    const char *msg = \"Hello FIFO\";\n    write(fd, msg, strlen(msg));\n    close(fd);\n    return 0;\n}"},{"id":"4daf8d6c","t":"p","ch":6,"tp":"System V IPC","q":"编写 C 程序：使用共享内存，父进程创建共享内存并写入字符串 \"Hello SHM\"，子进程读取并输出（用 wait 保证顺序）。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/ipc.h>\n#include <sys/shm.h>\n#include <sys/wait.h>\n\nint main(void)\n{\n    int shmid = shmget(IPC_PRIVATE, 1024, IPC_CREAT | 0666);\n    if (shmid == -1) {\n        perror(\"shmget\");\n        return 1;\n    }\n    char *p = (char *)shmat(shmid, NULL, 0);\n    if (p == (void *)-1) {\n        perror(\"shmat\");\n        return 1;\n    }\n    strcpy(p, \"Hello SHM\");          /* 父进程先写 */\n\n    pid_t pid = fork();\n    if (pid == 0) {\n        printf(\"子进程读到: %s\\n\", p);  /* 子进程继承映射 */\n        shmdt(p);\n        exit(0);\n    }\n    wait(NULL);\n    shmdt(p);\n    shmctl(shmid, IPC_RMID, NULL);   /* 删除共享内存 */\n    return 0;\n}"},{"id":"ac2460e1","t":"p","ch":6,"tp":"System V IPC","q":"写出命令：①创建名为 mypipe 的有名管道；②在一个终端向其写入 hello（echo）；③在另一个终端读出内容（cat）；④查看系统中的 System V IPC 信息；⑤删除 shmid 为 5 的共享内存；⑥向 PID 为 1234 的进程发送 SIGUSR1。","a":"① mkfifo mypipe\n② echo hello > mypipe\n③ cat mypipe\n④ ipcs\n⑤ ipcrm -m 5\n⑥ kill -USR1 1234    （或 kill -10 1234）"},{"id":"fb2d27b2","t":"f","ch":7,"tp":"线程基本概念","q":"同一进程的各线程共享进程的地址空间、全局变量、打开的文件描述符，但各自拥有独立的______和寄存器。","a":[["栈","线程栈","堆栈"]],"e":"还包括独立的线程 ID、errno、信号屏蔽字。"},{"id":"b315a15e","t":"f","ch":7,"tp":"线程基本概念","q":"线程相对于进程的优点：创建和切换开销______（大/小），通信方便（共享内存）。","a":[["小"]],"e":"因为不需要复制地址空间。"},{"id":"45660f71","t":"c","ch":7,"tp":"线程基本概念","q":"关于线程与进程的叙述，正确的是（  ）。","a":1,"o":["线程是资源分配的基本单位","线程是 CPU 调度的基本单位","线程之间不能共享数据","一个进程只能有一个线程"],"e":"进程是资源分配单位，线程是调度单位。"},{"id":"dfb044e8","t":"c","ch":7,"tp":"线程基本概念","q":"Linux 中线程的实现方式是（  ）。","a":1,"o":["用户级线程，内核无感知","通过共享资源的轻量级进程（LWP）实现","不支持线程","仅支持纤程"],"e":"NPTL 一对一模型，每个线程对应一个内核调度实体。"},{"id":"ed85921a","t":"c","ch":7,"tp":"线程基本概念","q":"多线程程序中，下列变量为线程私有（互不干扰）的是（  ）。","a":2,"o":["全局变量","静态局部变量","函数内的自动局部变量","堆上动态分配的内存（通过全局指针共享）"],"e":"自动变量在各线程自己的栈上。"},{"id":"2aabd567","t":"j","ch":7,"tp":"线程基本概念","q":"线程拥有独立的栈空间。","a":true,"e":"每个线程有自己的栈和寄存器。"},{"id":"23ffe096","t":"j","ch":7,"tp":"线程基本概念","q":"线程是资源分配的基本单位。","a":false,"e":"资源分配的基本单位是进程，线程是 CPU 调度的基本单位。"},{"id":"49c160fc","t":"s","ch":7,"tp":"线程基本概念","q":"简述线程与进程的区别。（10分）","a":"1. 资源：进程是资源分配的基本单位，拥有独立地址空间；线程是 CPU 调度的基本单位，共享所属进程的地址空间、文件描述符等资源，仅拥有自己的栈、寄存器、线程 ID 等。\n2. 开销：进程创建、切换开销大；线程小。\n3. 通信：进程间通信需借助 IPC；同一进程内线程通过全局变量等直接通信，但必须同步。\n4. 独立性：进程相互独立，一个进程崩溃一般不影响其他进程；线程崩溃会导致整个进程退出。\n5. Linux 实现：线程以轻量级进程（LWP）实现，通过 clone 创建，共享资源。"},{"id":"115af6f6","t":"f","ch":7,"tp":"线程创建与终止","q":"线程终止自己的函数是______，获取自己线程 ID 的函数是______。","a":[["pthread_exit"],["pthread_self"]],"e":"pthread_equal 比较两个线程 ID。"},{"id":"83bccceb","t":"f","ch":7,"tp":"线程创建与终止","q":"请求终止同一进程内另一个线程的函数是______。","a":[["pthread_cancel"]],"e":"目标线程在取消点响应。"},{"id":"985e2177","t":"c","ch":7,"tp":"线程创建与终止","q":"pthread_create 的第一个参数用来（  ）。","a":1,"o":["传递线程函数","返回新线程的 ID","指定线程属性","传递参数"],"e":"pthread_t *thread，成功后写入新线程 ID。"},{"id":"824f36fc","t":"c","ch":7,"tp":"线程创建与终止","q":"pthread_exit 与 exit 的区别是（  ）。","a":1,"o":["pthread_exit 结束整个进程","pthread_exit 只结束调用它的线程，exit 结束整个进程","没有区别","exit 只结束线程"],"e":"主线程调用 pthread_exit 时，其他线程继续运行。"},{"id":"80717c4","t":"c","ch":7,"tp":"线程创建与终止","q":"关于 pthread_create 的参数传递，下列说法正确的是（  ）。","a":0,"o":["只能传一个参数，但可通过结构体指针传多个值","可以直接传递多个参数","不能传递参数","线程函数不需要参数"],"e":"线程函数的 void * 参数可以是结构体指针。"},{"id":"e5bc4b9b","t":"c","ch":7,"tp":"线程创建与终止","q":"pthread_detach(tid) 之后（  ）。","a":0,"o":["线程结束后自动释放资源，不能再 join","仍必须 join","线程被终止","线程变成进程"],"e":"避免僵尸线程。"},{"id":"df0184ab","t":"c","ch":7,"tp":"线程创建与终止","q":"pthread_self() 返回（  ）。","a":0,"o":["当前线程的 ID","进程 PID","父线程 ID","线程优先级"],"e":"类型 pthread_t。"},{"id":"69ff0792","t":"j","ch":7,"tp":"线程创建与终止","q":"主线程用 pthread_exit 退出后，其他线程可以继续运行。","a":true,"e":"进程在最后一个线程结束时才终止。"},{"id":"ab2530e0","t":"j","ch":7,"tp":"线程创建与终止","q":"一个线程执行 exit() 会终止整个进程。","a":true,"e":"exit 作用于进程。"},{"id":"2124cdbc","t":"j","ch":7,"tp":"线程创建与终止","q":"pthread_join 可以对已被 detach 的线程调用。","a":false,"e":"会返回错误 EINVAL。"},{"id":"ad8d2582","t":"s","ch":7,"tp":"线程创建与终止","q":"简述 pthread_create 函数的各参数含义，并说明线程如何终止。（10分）","a":"1. int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine)(void *), void *arg)：\n   thread：保存新线程 ID；attr：线程属性，NULL 表示默认；start_routine：线程入口函数；arg：传给入口函数的参数；成功返回 0，失败返回错误码。\n2. 线程终止方式：①从入口函数 return；②调用 pthread_exit；③被其他线程 pthread_cancel；④进程终止（exit/main 返回）。\n3. 回收：pthread_join 等待并获取返回值；或 pthread_detach 让其自行回收。"},{"id":"75539d4f","t":"f","ch":7,"tp":"互斥锁","q":"互斥锁可以用宏______静态初始化。","a":[["PTHREAD_MUTEX_INITIALIZER"]],"e":"动态初始化用 pthread_mutex_init。"},{"id":"1fa82484","t":"f","ch":7,"tp":"互斥锁","q":"访问共享资源的那段代码称为______。","a":[["临界区"]],"e":"进入前加锁，出来后解锁。"},{"id":"8d779fed","t":"c","ch":7,"tp":"互斥锁","q":"下列关于互斥锁的叙述，正确的是（  ）。","a":1,"o":["允许多个线程同时持有","一次只能被一个线程持有","不需要初始化","不需要解锁"],"e":"未获得锁的线程会阻塞。"},{"id":"525c7be3","t":"c","ch":7,"tp":"互斥锁","q":"下列场景中，最容易引起死锁的是（  ）。","a":0,"o":["线程 A 持有锁1等待锁2，线程 B 持有锁2等待锁1","线程只用一把锁","线程加锁后很快释放","线程不加锁"],"e":"循环等待。"},{"id":"54ef46df","t":"c","ch":7,"tp":"互斥锁","q":"两个线程各对共享变量 count 执行 100000 次 count++（不加锁），最终 count 的值（  ）。","a":1,"o":["一定等于 200000","可能小于 200000","一定大于 200000","一定等于 100000"],"e":"count++ 不是原子操作，会丢失更新。"},{"id":"52e00460","t":"c","ch":7,"tp":"互斥锁","q":"关于加锁范围的叙述，较合理的是（  ）。","a":1,"o":["临界区越大越好","临界区应尽量小，只保护必须互斥的代码","不需要考虑","整个线程函数都加锁"],"e":"减少阻塞，提高并发。"},{"id":"f9daa211","t":"j","ch":7,"tp":"互斥锁","q":"临界区越大，程序并发性能越好。","a":false,"e":"临界区应尽量小。"},{"id":"7318c04f","t":"j","ch":7,"tp":"互斥锁","q":"线程加锁后忘记解锁，会导致其他等待该锁的线程永久阻塞。","a":true,"e":"这是常见错误。"},{"id":"80b7db02","t":"j","ch":7,"tp":"互斥锁","q":"线程 A 加的锁可以由线程 B 解锁（普通互斥锁）。","a":false,"e":"应由加锁线程解锁。"},{"id":"1fc3498d","t":"f","ch":7,"tp":"条件变量与信号量","q":"条件变量必须与______一起使用，以保护被判断的共享条件。","a":[["互斥锁","互斥量","mutex"]],"e":"pthread_cond_wait(&cond, &mutex)。"},{"id":"878a927e","t":"f","ch":7,"tp":"条件变量与信号量","q":"POSIX 信号量的头文件是 semaphore.h，初始化函数是 sem_init，P 操作函数是______，V 操作函数是______。","a":[["sem_wait"],["sem_post"]],"e":"销毁用 sem_destroy。"},{"id":"99040ca4","t":"c","ch":7,"tp":"条件变量与信号量","q":"pthread_cond_wait 调用时的正确做法是（  ）。","a":0,"o":["先加锁，再在 while 条件检查中调用 wait","不加锁直接调用","用 if 判断条件即可","先解锁再 wait"],"e":"防止丢失唤醒和虚假唤醒。"},{"id":"9d875fb5","t":"c","ch":7,"tp":"条件变量与信号量","q":"生产者—消费者问题中，缓冲区满时生产者应（  ）。","a":1,"o":["继续生产","等待（阻塞）直到有空位","退出","清空缓冲"],"e":"用条件变量或信号量实现。"},{"id":"58186844","t":"c","ch":7,"tp":"条件变量与信号量","q":"sem_post 的作用是（  ）。","a":0,"o":["信号量加 1，并唤醒等待者","信号量减 1","等待","销毁"],"e":"相当于 V 操作。"},{"id":"45c760b9","t":"c","ch":7,"tp":"条件变量与信号量","q":"线程同步的方式不包括（  ）。","a":3,"o":["互斥锁","条件变量","信号量","fork"],"e":"fork 用于创建进程。"},{"id":"85c1320","t":"c","ch":7,"tp":"条件变量与信号量","q":"可重入函数的特点是（  ）。","a":1,"o":["使用静态/全局数据且不加保护","不依赖全局状态，可被多个线程同时调用（或中断后再次调用）","必须使用锁","只能递归调用"],"e":"如 strtok_r、localtime_r。"},{"id":"77d9d87c","t":"j","ch":7,"tp":"条件变量与信号量","q":"条件变量必须与互斥锁一起使用。","a":true,"e":"互斥锁保护条件判断。"},{"id":"8d09b904","t":"j","ch":7,"tp":"条件变量与信号量","q":"调用 pthread_cond_wait 时应使用 if 而非 while 来检查条件。","a":false,"e":"应使用 while，防止虚假唤醒。"},{"id":"5edc8f70","t":"j","ch":7,"tp":"条件变量与信号量","q":"信号量既可用于互斥，也可用于同步。","a":true,"e":"初值1做互斥；初值0做同步。"},{"id":"ff8249fb","t":"j","ch":7,"tp":"条件变量与信号量","q":"strtok 是线程安全的函数。","a":false,"e":"使用静态缓冲区，不安全，应使用 strtok_r。"},{"id":"b583b91c","t":"s","ch":7,"tp":"条件变量与信号量","q":"简述互斥锁和条件变量的作用及使用步骤。（15分）","a":"1. 互斥锁：保证对共享资源（临界区）的互斥访问。步骤：①定义 pthread_mutex_t 并初始化（PTHREAD_MUTEX_INITIALIZER 或 pthread_mutex_init）；②进入临界区前 pthread_mutex_lock；③访问共享数据；④pthread_mutex_unlock；⑤不再使用时 pthread_mutex_destroy。\n2. 条件变量：让线程等待某个条件成立，并在条件变化时被通知。必须与互斥锁配合。步骤：①定义并初始化 pthread_cond_t；②等待方：lock(mutex) → while(条件不满足) pthread_cond_wait(&cond,&mutex) → 处理 → unlock；③通知方：lock → 修改条件 → pthread_cond_signal/broadcast → unlock；④销毁 pthread_cond_destroy。\n3. pthread_cond_wait 会原子地解锁并睡眠，唤醒时重新加锁；使用 while 防止虚假唤醒。"},{"id":"6b9c9b2b","t":"s","ch":7,"tp":"条件变量与信号量","q":"简述死锁产生的必要条件及预防方法。（8分）","a":"1. 必要条件：①互斥：资源一次只能被一个线程占用；②请求与保持：持有资源的同时请求新资源；③不可剥夺：已获得的资源不能被强行夺走；④循环等待：存在线程之间资源请求的循环链。\n2. 预防：破坏任一条件。如对多把锁规定统一申请顺序（破坏循环等待）；一次性申请全部资源（破坏请求与保持）；使用 trylock 失败后释放已持有的锁（破坏不可剥夺）；缩小临界区、减少嵌套锁。"},{"id":"9a5456c5","t":"p","ch":7,"tp":"条件变量与信号量","q":"编写 C 程序：创建两个线程，线程1计算 1~50 的和，线程2计算 51~100 的和，主线程等待两个线程结束后输出总和。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <pthread.h>\n\nstruct range { int from, to; long sum; };\n\nvoid *calc(void *arg)\n{\n    struct range *r = (struct range *)arg;\n    r->sum = 0;\n    for (int i = r->from; i <= r->to; i++)\n        r->sum += i;\n    return NULL;\n}\n\nint main(void)\n{\n    pthread_t t1, t2;\n    struct range r1 = {1, 50, 0}, r2 = {51, 100, 0};\n\n    pthread_create(&t1, NULL, calc, &r1);\n    pthread_create(&t2, NULL, calc, &r2);\n    pthread_join(t1, NULL);\n    pthread_join(t2, NULL);\n\n    printf(\"1~50 的和: %ld\\n\", r1.sum);\n    printf(\"51~100 的和: %ld\\n\", r2.sum);\n    printf(\"总和: %ld\\n\", r1.sum + r2.sum);\n    return 0;\n}"},{"id":"a6145ff4","t":"p","ch":7,"tp":"条件变量与信号量","q":"编写 C 程序：创建一个线程，在线程中输出 \"Hello from thread\"，并输出线程 ID；主线程等待其结束后输出 \"main exit\"。","a":"#include <stdio.h>\n#include <pthread.h>\n\nvoid *thread_func(void *arg)\n{\n    printf(\"Hello from thread, tid=%lu\\n\", (unsigned long)pthread_self());\n    return NULL;\n}\n\nint main(void)\n{\n    pthread_t tid;\n    if (pthread_create(&tid, NULL, thread_func, NULL) != 0) {\n        fprintf(stderr, \"create failed\\n\");\n        return 1;\n    }\n    pthread_join(tid, NULL);\n    printf(\"main exit\\n\");\n    return 0;\n}"},{"id":"8e332a8","t":"p","ch":7,"tp":"条件变量与信号量","q":"编写 C 程序：创建 3 个线程，通过参数传入编号 0、1、2，每个线程输出 \"thread N running\"。要求参数传递不产生竞争。","a":"#include <stdio.h>\n#include <pthread.h>\n\nvoid *run(void *arg)\n{\n    int id = *(int *)arg;\n    printf(\"thread %d running\\n\", id);\n    return NULL;\n}\n\nint main(void)\n{\n    pthread_t tid[3];\n    int ids[3];                    /* 每个线程使用独立的参数变量 */\n\n    for (int i = 0; i < 3; i++) {\n        ids[i] = i;\n        pthread_create(&tid[i], NULL, run, &ids[i]);\n    }\n    for (int i = 0; i < 3; i++)\n        pthread_join(tid[i], NULL);\n    return 0;\n}"},{"id":"a692925d","t":"p","ch":7,"tp":"条件变量与信号量","q":"编写 C 程序：线程函数返回一个整数结果（如 42），主线程通过 pthread_join 获取并输出该返回值。","a":"#include <stdio.h>\n#include <stdlib.h>\n#include <pthread.h>\n\nvoid *func(void *arg)\n{\n    int *result = malloc(sizeof(int));\n    *result = 42;\n    return result;                  /* 不能返回局部变量地址 */\n}\n\nint main(void)\n{\n    pthread_t tid;\n    void *ret;\n\n    pthread_create(&tid, NULL, func, NULL);\n    pthread_join(tid, &ret);\n    printf(\"线程返回值: %d\\n\", *(int *)ret);\n    free(ret);\n    return 0;\n}"},{"id":"c02ae08d","t":"p","ch":7,"tp":"条件变量与信号量","q":"使用条件变量编写简单示例：线程 A 等待变量 ready 变为 1，线程 B（主线程）置 ready=1 并通知 A。","a":"#include <stdio.h>\n#include <unistd.h>\n#include <pthread.h>\n\npthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;\npthread_cond_t  cond = PTHREAD_COND_INITIALIZER;\nint ready = 0;\n\nvoid *waiter(void *arg)\n{\n    pthread_mutex_lock(&mtx);\n    while (!ready)                              /* 用 while 防止虚假唤醒 */\n        pthread_cond_wait(&cond, &mtx);         /* 原子地解锁并等待 */\n    printf(\"A: 条件满足，继续执行\\n\");\n    pthread_mutex_unlock(&mtx);\n    return NULL;\n}\n\nint main(void)\n{\n    pthread_t t;\n    pthread_create(&t, NULL, waiter, NULL);\n\n    sleep(1);\n    pthread_mutex_lock(&mtx);\n    ready = 1;\n    pthread_cond_signal(&cond);                 /* 通知 A */\n    pthread_mutex_unlock(&mtx);\n\n    pthread_join(t, NULL);\n    return 0;\n}"},{"id":"a565d12c","t":"p","ch":7,"tp":"条件变量与信号量","q":"编写生产者—消费者程序（缓冲区容量 5，生产/消费各 10 个整数），使用互斥锁和两个条件变量实现。","a":"#include <stdio.h>\n#include <pthread.h>\n\n#define N 5\n#define TOTAL 10\n\nint buf[N];\nint in = 0, out = 0, count = 0;\npthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;\npthread_cond_t not_full  = PTHREAD_COND_INITIALIZER;\npthread_cond_t not_empty = PTHREAD_COND_INITIALIZER;\n\nvoid *producer(void *arg)\n{\n    for (int i = 1; i <= TOTAL; i++) {\n        pthread_mutex_lock(&mtx);\n        while (count == N)\n            pthread_cond_wait(&not_full, &mtx);\n        buf[in] = i;\n        in = (in + 1) % N;\n        count++;\n        printf(\"生产: %d\\n\", i);\n        pthread_cond_signal(&not_empty);\n        pthread_mutex_unlock(&mtx);\n    }\n    return NULL;\n}\n\nvoid *consumer(void *arg)\n{\n    for (int i = 1; i <= TOTAL; i++) {\n        pthread_mutex_lock(&mtx);\n        while (count == 0)\n            pthread_cond_wait(&not_empty, &mtx);\n        int v = buf[out];\n        out = (out + 1) % N;\n        count--;\n        printf(\"消费: %d\\n\", v);\n        pthread_cond_signal(&not_full);\n        pthread_mutex_unlock(&mtx);\n    }\n    return NULL;\n}\n\nint main(void)\n{\n    pthread_t p, c;\n    pthread_create(&p, NULL, producer, NULL);\n    pthread_create(&c, NULL, consumer, NULL);\n    pthread_join(p, NULL);\n    pthread_join(c, NULL);\n    return 0;\n}"},{"id":"86a328af","t":"p","ch":7,"tp":"条件变量与信号量","q":"写出命令：①编译多线程程序 t.c 生成可执行文件 t；②查看进程 t 的所有线程（LWP）；③后台运行 ./t。","a":"① gcc t.c -o t -lpthread      （或 -pthread）\n② ps -eLf | grep t            （或 ps -T -p <pid>）\n③ ./t &"}]};
+</script>
+<script>
+(function(){
+'use strict';
+/* ====================== 常量与数据 ====================== */
+const TYPES={f:'填空题',c:'选择题',j:'判断题',s:'简答题',p:'编程题'};
+const TORDER=['f','c','j','s','p'];
+const CNUM=['一','二','三','四','五'];
+const DAY=864e5, BOX_DAYS=[0,1,2,4,7,15,30];
+const Q=QB.q; const BY={}; Q.forEach((q,i)=>{q.i=i;BY[q.id]=q;});
+const CHS=Object.keys(QB.ch).map(Number).sort((a,b)=>a-b);
+const CHN=ch=>QB.ch[ch]||('第'+ch+'章');
+const TOPICS=[]; const TOPIC_IDX={};
+Q.forEach(q=>{const k=q.ch+'|'+q.tp;if(!TOPIC_IDX[k]){TOPIC_IDX[k]={key:k,ch:q.ch,tp:q.tp,ids:[]};TOPICS.push(TOPIC_IDX[k]);}TOPIC_IDX[k].ids.push(q.id);});
+const IC={
+ home:'<svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>',
+ pen:'<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg>',
+ clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+ book:'<svg viewBox="0 0 24 24"><path d="M5 4.5h11a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg>',
+ list:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r=".8"/><circle cx="4.5" cy="12" r=".8"/><circle cx="4.5" cy="18" r=".8"/></svg>',
+ chart:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+ gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2-1.2L14.2 3h-4.4l-.4 2.6a7 7 0 0 0-2 1.2l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 2 1.2l.4 2.6h4.4l.4-2.6a7 7 0 0 0 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>',
+ sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>',
+ moon:'<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
+ star:'<svg viewBox="0 0 24 24"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17.2 6.6 20.2l1.1-6.1L3.2 9.9l6.1-.8z"/></svg>',
+ search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>',
+ play:'<svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></svg>',
+ check:'<svg viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>',
+ x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+};
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtT=ms=>{const s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(x).padStart(2,'0');};
+const pct=(a,b)=>b?Math.round(a*100/b):0;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const off=new Date().getTimezoneOffset()*6e4;
+const dayN=ts=>Math.floor((ts-off)/DAY);
+const dayKey=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+function norm(s){return String(s==null?'':s).normalize('NFKC').toLowerCase().replace(/[\s'"`‘’“”。，、]/g,'').replace(/\(\)$/,'');}
+
+/* ====================== 存储 ====================== */
+const KEY='linux-qb-v1';
+let memOnly=false;
+const defState=()=>({v:1,rec:{},log:{},hist:[],exams:[],stars:{},set:{theme:'auto',shuffle:true,instant:true},resume:null,created:Date.now()});
+let S=defState();
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw){const o=JSON.parse(raw);S=Object.assign(defState(),o);S.set=Object.assign(defState().set,o.set||{});}
+  }catch(e){memOnly=true;}
+}
+let saveT=null;
+function save(){clearTimeout(saveT);saveT=setTimeout(saveNow,120);}
+function saveNow(){
+  try{localStorage.setItem(KEY,JSON.stringify(S));if(memOnly){memOnly=false;render(true);}}
+  catch(e){if(!memOnly){memOnly=true;render(true);}}
+}
+window.addEventListener('beforeunload',()=>{persistSession();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){persistSession();saveNow();}});
+
+/* ====================== 记录与状态判断 ====================== */
+const rec=id=>S.rec[id]||null;
+const isNew=id=>{const r=S.rec[id];return !r||!r.a;};
+const isWrong=id=>{const r=S.rec[id];return !!(r&&r.wb);};
+const isMas=id=>{const r=S.rec[id];return !!(r&&r.mas&&!r.wb);};
+const isDue=id=>{const r=S.rec[id];return !!(r&&r.a>0&&!r.wb&&r.due<=dayN(Date.now()));};
+const isStar=id=>!!S.stars[id];
+function record(id,ok,ans){
+  const now=Date.now();
+  const r=S.rec[id]||(S.rec[id]={a:0,c:0,w:0,st:0,box:0,due:0,hist:''});
+  r.a++;r.last=now;r.res=ok?1:0;r.hist=((r.hist||'')+(ok?'1':'0')).slice(-8);
+  if(ok){r.c++;r.st++;r.box=Math.min(6,r.box+1);r.due=dayN(now)+BOX_DAYS[r.box];if(r.wb&&r.st>=2){r.wb=0;r.mas=1;}}
+  else{r.w++;r.st=0;r.box=0;r.due=dayN(now);r.wb=1;r.mas=0;r.lw=now;r.la=ans==null?'':String(ans).slice(0,300);}
+  const k=dayKey(now),L=S.log[k]||(S.log[k]={n:0,c:0});L.n++;if(ok)L.c++;
+  save();
+}
+function applyRecord(q,a){
+  a.snap=S.rec[q.id]?JSON.parse(JSON.stringify(S.rec[q.id])):null;a.day=dayKey(Date.now());
+  record(q.id,a.ok,ansText(q,a));a.rec=true;
+}
+function reRecord(q,a,newOk){
+  if(a.rec){
+    if(a.snap)S.rec[q.id]=a.snap;else delete S.rec[q.id];
+    const L=S.log[a.day];if(L){L.n--;if(a.ok)L.c--;}
+  }
+  a.ok=newOk;applyRecord(q,a);
+}
+function ansText(q,a){
+  if(q.t==='c')return a.v==null?'':q.o[a.v];
+  if(q.t==='j')return a.v==null?'':(a.v?'正确':'错误');
+  if(q.t==='f')return (a.v||[]).join(' ; ');
+  return a.v||'';
+}
+
+/* ====================== 判分 ====================== */
+function gradeObj(q,a){
+  if(!a)return false;
+  if(q.t==='c')return a.v===q.a;
+  if(q.t==='j')return a.v===q.a;
+  if(q.t==='f'){
+    const v=a.v||[];
+    return q.a.every((alts,i)=>{const x=norm(v[i]);return x!==''&&alts.some(t=>norm(t)===x);});
+  }
+  return (a.sc||0)>=0.7;
+}
+function fillMarks(q,a){const v=(a&&a.v)||[];return q.a.map((alts,i)=>{const x=norm(v[i]);return x!==''&&alts.some(t=>norm(t)===x);});}
+const isSub=q=>q.t==='s'||q.t==='p';
+const answered=(q,a)=>{
+  if(!a)return false;
+  if(q.t==='f')return (a.v||[]).some(x=>String(x||'').trim());
+  if(isSub(q))return !!(a.rev||(a.v||'').trim());
+  return a.v!=null;
+};
+
+/* ====================== 筛选与出题 ====================== */
+function srcOK(id,src){
+  switch(src){
+    case 'new':return isNew(id);
+    case 'wrong':return isWrong(id);
+    case 'due':return isDue(id);
+    case 'star':return isStar(id);
+    case 'mas':return isMas(id);
+    case 'done':return !isNew(id);
+    default:return true;
+  }
+}
+function poolOf(f){
+  return Q.filter(q=>f.chs.has(q.ch)&&f.types.has(q.t)&&(!f.topics.size||f.topics.has(q.ch+'|'+q.tp))&&srcOK(q.id,f.src));
+}
+function topicStat(t){
+  const done=t.ids.filter(id=>!isNew(id));
+  const ok=done.filter(id=>S.rec[id].res===1).length;
+  return {n:t.ids.length,done:done.length,ok,acc:done.length?ok/done.length:null,wrong:t.ids.filter(isWrong).length};
+}
+function weakTopics(){
+  return TOPICS.map(t=>({t,s:topicStat(t)})).filter(x=>x.s.done>=2&&x.s.acc<0.75||x.s.wrong>=2)
+    .sort((a,b)=>(a.s.acc??1)-(b.s.acc??1)||b.s.wrong-a.s.wrong);
+}
+function chStat(ch){
+  const ids=Q.filter(q=>q.ch===ch).map(q=>q.id);
+  const done=ids.filter(id=>!isNew(id));
+  const ok=done.filter(id=>S.rec[id].res===1).length;
+  return {n:ids.length,done:done.length,ok,wrong:ids.filter(isWrong).length,acc:done.length?ok/done.length:null};
+}
+function overall(){
+  const done=Q.filter(q=>!isNew(q.id));
+  let att=0,cor=0;Object.values(S.rec).forEach(r=>{att+=r.a;cor+=r.c;});
+  const okLatest=done.filter(q=>S.rec[q.id].res===1).length;
+  return {n:Q.length,done:done.length,att,cor,okLatest,wrong:Q.filter(q=>isWrong(q.id)).length,due:Q.filter(q=>isDue(q.id)).length,
+    mas:Q.filter(q=>isMas(q.id)).length,star:Object.keys(S.stars).filter(id=>BY[id]).length};
+}
+function streakDays(){
+  let n=0,d=dayN(Date.now());
+  const has=k=>S.log[k]&&S.log[k].n>0;
+  const key=dn=>dayKey(dn*DAY+off+DAY/2);
+  if(!has(key(d)))d--;
+  while(has(key(d))){n++;d--;}
+  return n;
+}
+const todayCount=()=>{const L=S.log[dayKey(Date.now())];return L?L.n:0;};
+function buildSmart(n){
+  n=n||20;const all=Q.map(q=>q.id),used=new Set(),out=[];
+  const take=(arr,k)=>{for(const id of arr){if(out.length>=n||k<=0)break;if(used.has(id))continue;used.add(id);out.push(id);k--;}};
+  const wrong=shuffle(all.filter(isWrong));
+  const due=all.filter(isDue).sort((a,b)=>S.rec[a].due-S.rec[b].due);
+  const wk=weakTopics().slice(0,3).map(x=>x.t.key);
+  const weak=shuffle(Q.filter(q=>wk.includes(q.ch+'|'+q.tp)&&(isNew(q.id)||S.rec[q.id].res!==1)).map(q=>q.id));
+  const cs={};CHS.forEach(c=>cs[c]=chStat(c));
+  const fresh=shuffle(all.filter(isNew)).sort((a,b)=>{const ca=cs[BY[a].ch],cb=cs[BY[b].ch];return (ca.done/ca.n)-(cb.done/cb.n);});
+  take(wrong,Math.ceil(n*.35));take(due,Math.ceil(n*.3));take(weak,Math.ceil(n*.2));take(fresh,n);
+  if(out.length<n){take(shuffle(all.filter(id=>!isNew(id)).sort((a,b)=>S.rec[a].last-S.rec[b].last).slice(0,n*3)),n);}
+  if(out.length<n)take(shuffle(all),n);
+  return shuffle(out);
+}
+function objOnly(ids){return ids;}
+
+/* ====================== 会话（练习/考试） ====================== */
+let SES=null;
+function uid(){return Math.random().toString(36).slice(2,9);}
+function startSession(o){
+  if(!o.ids.length){toast('没有符合条件的题目');return;}
+  SES={sid:uid(),mode:o.mode,title:o.title,ids:o.ids.slice(),idx:0,ans:{},acc:0,t0:Date.now(),instant:o.instant!==false,limit:o.limit||0,pts:o.pts||null,cfg:o.cfg||null,done:false,navOpen:false};
+  go('#/run');
+  persistSession();
+}
+function go(h){if(location.hash===h)render();else location.hash=h;}
+function persistSession(){
+  if(!SES||SES.done){return;}
+  S.resume={sid:SES.sid,mode:SES.mode,title:SES.title,ids:SES.ids,idx:SES.idx,ans:SES.ans,acc:SES.acc+(Date.now()-SES.t0),instant:SES.instant,limit:SES.limit,pts:SES.pts,cfg:SES.cfg,at:Date.now()};
+  save();
+}
+function loadResume(){
+  const r=S.resume;if(!r)return false;
+  SES=Object.assign({},r,{t0:Date.now(),done:false,navOpen:false});
+  SES.ids=SES.ids.filter(id=>BY[id]);
+  if(!SES.ids.length){SES=null;S.resume=null;return false;}
+  SES.idx=Math.min(SES.idx||0,SES.ids.length-1);
+  return true;
+}
+function resumeSession(){if(loadResume())go('#/run');}
+const elapsed=()=>SES?SES.acc+(Date.now()-SES.t0):0;
+
+/* ====================== UI 辅助 ====================== */
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),2200);}
+function openModal(html){$('#modalBox').innerHTML=html;$('#modal').classList.add('on');}
+function closeModal(){$('#modal').classList.remove('on');}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+function applyTheme(){
+  const t=S.set.theme,r=document.documentElement;
+  if(t==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);
+  const dark=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);
+  $('#btnTheme').innerHTML=dark?IC.sun:IC.moon;
+  $('#btnSet').innerHTML=IC.gear;
+}
+function bar(p,cls){return '<div class="bar"><i class="'+(cls||'')+'" style="width:'+Math.max(0,Math.min(100,p))+'%"></i></div>';}
+const tTag=t=>'<span class="tag t-'+t+'">'+TYPES[t]+'</span>';
+
+/* 代码高亮（轻量） */
+const KW_C=new Set('int char long short void return if else for while do break continue struct const unsigned signed sizeof static NULL typedef switch case default extern'.split(' '));
+const KW_SH=new Set('if then else elif fi for in do done while until case esac function local return exit break continue'.split(' '));
+function looksCode(s){return /#include|#!\/bin|^\s*(if|for|while)\b.*(then|do)\b|^\s*\w+\(\)\s*\{/m.test(s)||/^[a-z_]+=\S+$/m.test(s)&&s.split('\n').length>3;}
+function hl(src){
+  const isC=/#include/.test(src);const KW=isC?KW_C:KW_SH;
+  const re=/(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|(^#(?:include|define|!)[^\n]*)|((?:^|[ \t])#[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|(\b\d+\b)|([A-Za-z_]\w*)/gm;
+  return esc(src).replace(/&quot;/g,'"').replace(re,(m,c1,pp,c2,str,num,id)=>{
+    if(c1)return '<span class="tk-c">'+c1+'</span>';
+    if(pp)return '<span class="tk-p">'+pp+'</span>';
+    if(c2){const lead=m.match(/^[ \t]*/)[0];return lead+'<span class="tk-c">'+m.slice(lead.length)+'</span>';}
+    if(str)return '<span class="tk-s">'+str+'</span>';
+    if(num)return '<span class="tk-n">'+num+'</span>';
+    if(id&&KW.has(id))return '<span class="tk-k">'+id+'</span>';
+    return m;
+  });
+}
+function codeBlock(s){return '<pre class="code">'+(looksCode(s)?hl(s):esc(s))+'</pre>';}
+
+/* 参考答案 HTML */
+function ansHtml(q,ord){
+  if(q.t==='f'){
+    return q.a.map((alts,i)=>(q.a.length>1?'<div>第 '+(i+1)+' 空：':'<div>')+alts.map((x,k)=>(k?'<span class="sub"> 或 </span>':'')+'<code>'+esc(x)+'</code>').join('')+'</div>').join('');
+  }
+  if(q.t==='c'){
+    const k=ord?ord.indexOf(q.a):q.a;return '<div><code>'+'ABCD'[k]+'</code> '+esc(q.o[q.a])+'</div>';
+  }
+  if(q.t==='j')return '<div><code>'+(q.a?'√ 正确':'× 错误')+'</code></div>';
+  if(q.t==='p')return codeBlock(q.a);
+  return '<pre class="txt">'+esc(q.a)+'</pre>';
+}
+function expHtml(q){return q.e?'<div class="exp"><b>解析</b>'+esc(q.e)+'</div>':'';}
+
+/* ====================== 路由 ====================== */
+const ROUTES=[['home','首页','home'],['practice','练习','pen'],['exam','模拟考试','clock'],['wrong','错题本','book'],['bank','题库','list'],['stats','统计','chart']];
+let route='home';
+function curRoute(){const h=(location.hash||'#/home').replace(/^#\/?/,'').split('?')[0];return h||'home';}
+function renderNav(){
+  const wn=Q.filter(q=>isWrong(q.id)).length;
+  const active=route==='run'||route==='result'?(SES&&SES.mode==='exam'?'exam':'practice'):route;
+  $('#tabs').innerHTML=ROUTES.map(([k,l,i])=>'<button class="tab '+(active===k?'on':'')+'" data-go="'+k+'">'+IC[i]+l+(k==='wrong'&&wn?'<span class="n">'+wn+'</span>':'')+'</button>').join('');
+  $('#bn').innerHTML=ROUTES.map(([k,l,i])=>'<button class="'+(active===k?'on':'')+'" data-go="'+k+'">'+IC[i]+l.replace('模拟考试','模考')+(k==='wrong'&&wn?'<span class="n">'+wn+'</span>':'')+'</button>').join('');
+}
+let timerH=null;
+function render(keepScroll){
+  route=curRoute();
+  clearInterval(timerH);timerH=null;
+  const v=$('#view');
+  let html='';
+  if(memOnly)html+='<div class="banner bad">当前浏览器未允许本地存储，学习记录无法自动保存。请在「设置」中使用「导出进度」手动备份，或换用 Chrome / Edge / Safari 打开本文件。</div>';
+  switch(route){
+    case 'practice':html+=vPractice();break;
+    case 'exam':html+=vExam();break;
+    case 'wrong':html+=vWrong();break;
+    case 'bank':html+=vBank();break;
+    case 'stats':html+=vStats();break;
+    case 'run':if(!SES&&!loadResume()){location.replace('#/home');return;}html+=vRun();break;
+    case 'result':if(!SES||!SES.done){location.replace('#/home');return;}html+=vResult();break;
+    default:route='home';html+=vHome();
+  }
+  v.innerHTML=html;
+  renderNav();
+  if(route==='run'&&SES){
+    const tm=$('#timer');
+    if(tm){const tick=()=>{const e=elapsed();if(SES.limit){const left=SES.limit*6e4-e;tm.textContent=fmtT(left);tm.classList.toggle('low',left<5*6e4);if(left<=0){clearInterval(timerH);toast('时间到，自动交卷');finishSession();}}else tm.textContent=fmtT(e);};tick();timerH=setInterval(tick,1000);}
+    afterRunRender();
+  }
+  if(!keepScroll)window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>{if(route==='run'&&SES&&!SES.done){try{syncCur();}catch(e){}persistSession();}render();});
+
+/* ====================== 首页 ====================== */
+function vHome(){
+  const o=overall(),sm=streakDays(),td=todayCount();
+  const wk=weakTopics();
+  const resume=S.resume&&S.resume.ids&&S.resume.ids.length;
+  let h='';
+  h+='<div class="row mb"><div><h1>Linux 系统及应用 · 练习题库</h1><div class="sub">共 '+o.n+' 题（前三章约占 60%）· 覆盖 '+CHS.length+' 章 · 题型与复习练习卷一致（填空 / 选择 / 判断 / 简答 / 编程）</div></div></div>';
+  if(resume){
+    const r=S.resume,done=Object.keys(r.ans||{}).filter(id=>BY[id]&&answered(BY[id],r.ans[id])).length;
+    h+='<div class="banner info"><b>有未完成的'+(r.mode==='exam'?'模拟考试':'练习')+'</b><span>「'+esc(r.title)+'」 已作答 '+done+'/'+r.ids.length+' 题</span><span class="sp"></span><button class="btn sm pri" data-act="resume">继续</button><button class="btn sm" data-act="discard">放弃</button></div>';
+  }
+  const smartN=20;
+  const mix=[];
+  if(o.wrong)mix.push('<span>错题<b>'+o.wrong+'</b></span>');
+  if(o.due)mix.push('<span>到期复习<b>'+o.due+'</b></span>');
+  if(wk.length)mix.push('<span>薄弱专题<b>'+Math.min(3,wk.length)+'</b></span>');
+  mix.push('<span>未做新题<b>'+(o.n-o.done)+'</b></span>');
+  h+='<div class="hero"><div style="flex:1;min-width:240px"><div class="sub">'+(sm?'连续学习 '+sm+' 天 · ':'')+'今日已答 '+td+' 题</div><div class="big" style="margin-top:2px">'+(o.done?'今日复习计划':'开始你的第一组练习')+'</div><div class="mix">'+mix.join('')+'</div><div class="sub" style="margin-top:10px">'+(o.done?'按「错题 → 到期 → 薄弱专题 → 新题」自动组卷，答错的题会进入错题本并按遗忘曲线安排复习。':'系统会优先安排还没做过的题；做过之后，这里会根据你的错题和遗忘曲线智能出题。')+'</div></div><button class="btn pri lg" data-act="smart">'+IC.play+'开始 · '+smartN+' 题</button></div>';
+
+  h+='<div class="sec"><h2>针对性复习</h2></div><div class="grid g4">';
+  const sug=(cls,num,lab,d,act,arg)=>'<button class="card sug '+(num?'':'zero')+'" '+(num?'data-act="'+act+'"'+(arg?' data-arg="'+arg+'"':''):'disabled')+'><span class="num">'+num+'</span><span class="lab">'+lab+'</span><span class="d">'+d+'</span></button>';
+  h+=sug('',o.wrong,'错题待攻克','连续答对 2 次后移出','s-wrong');
+  h+=sug('',o.due,'到期复习','按遗忘曲线安排','s-due');
+  h+=sug('',wk.length,'薄弱专题','正确率低于 75%','s-weak');
+  h+=sug('',o.n-o.done,'未做新题','优先覆盖进度最低的章','s-new');
+  h+='</div>';
+
+  if(wk.length){
+    h+='<div class="sec"><h2>薄弱专题</h2><span class="sub">点击专题直接练习</span></div><div class="card flat" style="padding:6px 16px">';
+    wk.slice(0,5).forEach(({t,s})=>{h+='<div class="row" style="padding:10px 0;border-bottom:1px solid var(--line)"><span class="tag">第'+t.ch+'章</span><div style="flex:1;min-width:140px"><div style="font-weight:600">'+esc(t.tp)+'</div><div class="sub">做过 '+s.done+'/'+s.n+' 题 · 待攻克错题 '+s.wrong+'</div></div><div style="width:110px">'+bar(Math.round((s.acc||0)*100),s.acc<.5?'bad':'warn')+'<div class="sub" style="text-align:right;margin-top:2px">'+Math.round((s.acc||0)*100)+'%</div></div><button class="btn sm" data-act="topic" data-arg="'+esc(t.key)+'">练习</button></div>';});
+    h+='</div>';
+  }
+
+  h+='<div class="sec"><h2>章节进度</h2><span class="sub">颜色深浅：做过 / 答对（以最近一次结果计）</span></div><div class="grid g3">';
+  CHS.forEach(ch=>{
+    const s=chStat(ch);
+    h+='<button class="card ch" data-act="chapter" data-arg="'+ch+'"><div class="h"><b>CH'+ch+'</b><span>'+esc(CHN(ch))+'</span></div><div class="bar two"><i class="back" style="width:'+pct(s.done,s.n)+'%"></i><i style="width:'+pct(s.ok,s.n)+'%"></i></div><div class="m"><span>已做 '+s.done+'/'+s.n+'</span><span>'+(s.acc==null?'未开始':'正确率 '+Math.round(s.acc*100)+'%')+'</span></div>'+(s.wrong?'<div class="m"><span style="color:var(--bad)">错题待攻克 '+s.wrong+'</span><span></span></div>':'')+'</button>';
+  });
+  h+='</div>';
+
+  h+='<div class="sec"><h2>近 14 天答题量</h2><span class="sub">浅色=答题数，深色=答对数</span></div><div class="card">'+activityChart()+'</div>';
+  return h;
+}
+function activityChart(){
+  const days=[];const t=dayN(Date.now());
+  for(let i=13;i>=0;i--){const dn=t-i;const k=dayKey(dn*DAY+off+DAY/2);days.push({k,L:S.log[k]||{n:0,c:0},d:new Date(dn*DAY+off+DAY/2)});}
+  const mx=Math.max(5,...days.map(d=>d.L.n));
+  return '<div class="act">'+days.map(d=>'<div title="'+d.k+'：'+d.L.n+' 题，答对 '+d.L.c+'"><i style="height:calc((100% - 17px)*'+(d.L.n/mx).toFixed(3)+')"><b style="height:'+(d.L.n?Math.round(d.L.c/d.L.n*100):0)+'%"></b></i><small>'+(d.d.getMonth()+1)+'/'+d.d.getDate()+'</small></div>').join('')+'</div>';
+}
+
+/* ====================== 练习设置 ====================== */
+const PS={chs:new Set(CHS),types:new Set(TORDER),topics:new Set(),src:'all',n:20,order:'rand',instant:null};
+function vPractice(){
+  const pool=poolOf(PS);
+  const srcs=[['all','全部题目'],['new','只做新题'],['wrong','错题待攻克'],['due','到期复习'],['star','收藏'],['mas','已掌握的错题']];
+  const ns=[10,20,30,50,0];
+  const inst=PS.instant==null?S.set.instant:PS.instant;
+  let h='<h1>自选练习</h1><div class="sub mb">按章节、专题、题型和来源组合出题</div><div class="card">';
+  h+='<div class="field"><div class="lb">章节<span class="hint">点击切换，可多选</span></div><div class="chips">'+CHS.map(c=>'<button class="chip '+(PS.chs.has(c)?'on':'')+'" data-act="tg" data-k="chs" data-v="'+c+'">第'+c+'章 '+esc(CHN(c))+'</button>').join('')+'</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="all-ch">全选</button><button class="btn sm" data-act="no-ch">清空</button></div>';
+  h+='<details class="tp" style="margin-top:6px"><summary>按专题精确选择'+(PS.topics.size?'（已选 '+PS.topics.size+' 个）':'')+'</summary>';
+  CHS.filter(c=>PS.chs.has(c)).forEach(c=>{h+='<div class="tg"><b>第'+c+'章</b><div class="chips">'+TOPICS.filter(t=>t.ch===c).map(t=>'<button class="chip '+(PS.topics.has(t.key)?'on':'')+'" data-act="tg" data-k="topics" data-v="'+esc(t.key)+'">'+esc(t.tp)+' <span style="opacity:.6">'+t.ids.length+'</span></button>').join('')+'</div></div>';});
+  h+=(PS.topics.size?'<div style="margin-top:8px"><button class="btn sm" data-act="clr-tp">清除专题选择</button></div>':'')+'</details></div>';
+  h+='<div class="field"><div class="lb">题型</div><div class="chips">'+TORDER.map(t=>'<button class="chip '+(PS.types.has(t)?'on':'')+'" data-act="tg" data-k="types" data-v="'+t+'">'+TYPES[t]+'</button>').join('')+'</div></div>';
+  h+='<div class="field"><div class="lb">题目来源</div><div class="chips">'+srcs.map(([k,l])=>{
+    const c=poolOf(Object.assign({},PS,{src:k})).length;
+    return '<button class="chip '+(PS.src===k?'on':'')+'" data-act="src" data-v="'+k+'">'+l+' <span style="opacity:.65">'+c+'</span></button>';}).join('')+'</div></div>';
+  h+='<div class="row" style="gap:28px;align-items:flex-start"><div class="field"><div class="lb">题目数量</div><div class="chips">'+ns.map(n=>'<button class="chip '+(PS.n===n?'on':'')+'" data-act="n" data-v="'+n+'">'+(n||'全部')+'</button>').join('')+'</div></div>';
+  h+='<div class="field"><div class="lb">顺序</div><div class="seg"><button class="'+(PS.order==='rand'?'on':'')+'" data-act="order" data-v="rand">随机</button><button class="'+(PS.order==='seq'?'on':'')+'" data-act="order" data-v="seq">按章节</button></div></div></div>';
+  h+='<div class="field"><div class="lb">答题方式</div><div class="row" style="gap:22px"><span class="switch '+(inst?'on':'')+'" data-act="p-inst"><i></i>即时反馈（答完马上看对错和解析）</span></div></div>';
+  h+='<div class="row" style="border-top:1px solid var(--line);padding-top:16px"><span class="count">符合条件 <b>'+pool.length+'</b> 题'+(PS.n&&pool.length>PS.n?'，本次抽取 <b>'+PS.n+'</b> 题':'')+'</span><span class="sp"></span><button class="btn pri lg" data-act="p-start" '+(pool.length?'':'disabled')+'>'+IC.play+'开始练习</button></div></div>';
+  return h;
+}
+
+/* ====================== 模拟考试 ====================== */
+const ES={chs:new Set(CHS),limit:120,pref:'fresh'};
+const EXAM_SPEC={f:{n:15,p:[1]},c:{n:20,p:[1]},j:{n:15,p:[1]},s:{n:2,p:[10,15]},p:{n:2,p:[15,10]}};
+function buildExam(){
+  const pool=Q.filter(q=>ES.chs.has(q.ch));
+  const ids=[],pts={};
+  TORDER.forEach(t=>{
+    const spec=EXAM_SPEC[t];let list=pool.filter(q=>q.t===t);
+    // 章节均衡：按章分组轮流取
+    const byCh={};list.forEach(q=>(byCh[q.ch]=byCh[q.ch]||[]).push(q));
+    Object.keys(byCh).forEach(c=>{
+      let arr=shuffle(byCh[c]);
+      if(ES.pref==='fresh'){const m={};arr.forEach(q=>m[q.id]=score(q));arr=arr.sort((a,b)=>m[a.id]-m[b.id]);}
+      byCh[c]=arr;
+    });
+    function score(q){const r=S.rec[q.id];if(!r||!r.a)return 0-Math.random()*.5;if(r.wb)return 1+Math.random();return 2+(r.res?1:0)+Math.random();}
+    const picked=[];
+    const rr=(ks,cnt)=>{ks=shuffle(ks);let k=0;while(cnt>0&&ks.some(c=>byCh[c].length)){const c=ks[k%ks.length];k++;if(byCh[c].length){picked.push(byCh[c].shift());cnt--;}}};
+    const all=Object.keys(byCh),fr=all.filter(c=>+c<=3),bk=all.filter(c=>+c>3);
+    if(fr.length&&bk.length){const nF=Math.round(spec.n*.6);rr(fr,nF);rr(bk,spec.n-picked.length);rr(all,spec.n-picked.length);}
+    else rr(all,spec.n);
+    shuffle(picked).forEach((q,i)=>picked[i]=q);
+    picked.forEach((q,i)=>{ids.push(q.id);pts[q.id]=spec.p[Math.min(i,spec.p.length-1)];});
+  });
+  return {ids,pts};
+}
+function vExam(){
+  const sel=Q.filter(q=>ES.chs.has(q.ch));
+  const cnt=t=>Math.min(EXAM_SPEC[t].n,sel.filter(q=>q.t===t).length);
+  const full=TORDER.reduce((a,t)=>{const n=cnt(t);const p=EXAM_SPEC[t].p;let s=0;for(let i=0;i<n;i++)s+=p[Math.min(i,p.length-1)];return a+s;},0);
+  let h='<h1>模拟考试</h1><div class="sub mb">仿照复习练习卷结构自动组卷：交卷后统一判分，简答/编程题对照参考答案自评</div><div class="card">';
+  h+='<div class="field"><div class="lb">考试范围</div><div class="chips">'+CHS.map(c=>'<button class="chip '+(ES.chs.has(c)?'on':'')+'" data-act="e-tg" data-v="'+c+'">第'+c+'章 '+esc(CHN(c))+'</button>').join('')+'</div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="e-all">全章（期末综合）</button></div></div>';
+  h+='<div class="row" style="gap:28px;align-items:flex-start"><div class="field"><div class="lb">考试时长</div><div class="chips">'+[60,90,120,150].map(m=>'<button class="chip '+(ES.limit===m?'on':'')+'" data-act="e-limit" data-v="'+m+'">'+m+' 分钟</button>').join('')+'</div></div>';
+  h+='<div class="field"><div class="lb">选题倾向</div><div class="seg"><button class="'+(ES.pref==='fresh'?'on':'')+'" data-act="e-pref" data-v="fresh">优先新题/错题</button><button class="'+(ES.pref==='rand'?'on':'')+'" data-act="e-pref" data-v="rand">完全随机</button></div></div></div>';
+  h+='<div class="card flat" style="background:var(--surface2)"><table class="t"><tr><th>题型</th><th class="n">题数</th><th class="n">每题分值</th><th class="n">小计</th></tr>'+TORDER.map(t=>{const n=cnt(t),p=EXAM_SPEC[t].p;let s=0;for(let i=0;i<n;i++)s+=p[Math.min(i,p.length-1)];return '<tr><td>'+CNUM[TORDER.indexOf(t)]+'、'+TYPES[t]+'</td><td class="n">'+n+'</td><td class="n">'+(p.length>1?p.join(' / '):p[0])+'</td><td class="n">'+s+'</td></tr>';}).join('')+'<tr><td><b>合计</b></td><td class="n"><b>'+TORDER.reduce((a,t)=>a+cnt(t),0)+'</b></td><td></td><td class="n"><b>'+full+'</b></td></tr></table></div>';
+  h+='<div class="row mt"><span class="sub">'+(S.exams.length?'已完成 '+S.exams.length+' 次模考':'尚未参加过模考')+'</span><span class="sp"></span><button class="btn pri lg" data-act="e-start" '+(sel.length?'':'disabled')+'>'+IC.clock+'开始考试</button></div></div>';
+  if(S.exams.length){
+    h+='<div class="sec"><h2>历次成绩</h2></div><div class="card flat"><table class="t"><tr><th>日期</th><th>范围</th><th class="n">得分</th><th class="n">用时</th></tr>'+S.exams.slice().reverse().slice(0,12).map(e=>'<tr><td>'+dayKey(e.t)+'</td><td>'+esc(e.range)+'</td><td class="n"><b>'+e.score+'</b> / '+e.full+'</td><td class="n">'+fmtT(e.ms)+'</td></tr>').join('')+'</table></div>';
+  }
+  return h;
+}
+
+/* ====================== 答题界面 ====================== */
+function ordOf(q,a){
+  if(q.t!=='c')return null;
+  if(!a.ord){a.ord=S.set.shuffle?shuffle([0,1,2,3]):[0,1,2,3];}
+  return a.ord;
+}
+function curQ(){return BY[SES.ids[SES.idx]];}
+function curA(q){return SES.ans[q.id]||(SES.ans[q.id]={});}
+function vRun(){
+  const n=SES.ids.length,q=curQ();
+  if(!q){finishSession();return '';}
+  const a=curA(q);
+  const locked=SES.instant&&!!a.chk;
+  const ptsTxt=SES.pts&&SES.pts[q.id]&&(q.t==='s'||q.t==='p')?'<span class="pts">（'+SES.pts[q.id]+' 分）</span>':'';
+  let h='<div class="run-head"><button class="btn sm" data-act="quit">'+IC.x+'退出</button><span class="ttl">'+esc(SES.title)+'</span><div class="bar"><i style="width:'+pct(SES.idx+1,n)+'%"></i></div><span class="timer" id="timer"></span></div>';
+  h+='<div class="card qcard"><div class="qmeta"><span class="qno">'+(SES.idx+1)+' / '+n+'</span>'+tTag(q.t)+'<span class="tag">第'+q.ch+'章 · '+esc(q.tp)+'</span>'+(isWrong(q.id)?'<span class="tag bad">错题</span>':isNew(q.id)?'<span class="tag ok">新题</span>':'')+'<button class="star '+(isStar(q.id)?'on':'')+'" data-act="star" title="收藏（S）">'+IC.star+'</button></div>';
+  h+=qBody(q,a,locked,ptsTxt);
+  h+=feedback(q,a,locked);
+  h+='</div>';
+  // 底部
+  const last=SES.idx===n-1;
+  h+='<div class="run-foot"><button class="btn" data-act="prev" '+(SES.idx?'':'disabled')+'>← 上一题</button><span class="sp"></span>';
+  if(!SES.instant&&last)h+='<button class="btn pri" data-act="finish">交卷</button>';
+  else if(last)h+='<button class="btn pri" data-act="finish">完成 '+IC.check+'</button>';
+  else h+='<button class="btn pri" data-act="next">下一题 →</button>';
+  h+='</div>';
+  h+='<details class="mt" '+(SES.navOpen?'open':'')+' id="navd"><summary class="sub" style="cursor:pointer">题目导航'+(SES.instant?'':'（'+SES.ids.filter(id=>answered(BY[id],SES.ans[id])).length+'/'+n+' 已作答）')+'</summary><div class="navg">'+SES.ids.map((id,i)=>{
+    const qq=BY[id],aa=SES.ans[id];let c='';
+    if(aa&&aa.chk&&SES.instant)c=aa.ok?'ok':'bad';else if(answered(qq,aa))c='ans';
+    if(i===SES.idx)c+=' cur';
+    return '<button class="'+c+'" data-act="jump" data-arg="'+i+'">'+(i+1)+'</button>';}).join('')+'</div><div class="legend"><span><i style="background:var(--accent-soft)"></i>答对</span><span><i style="background:var(--bad-soft)"></i>答错</span><span><i style="background:var(--surface2);border-color:var(--muted)"></i>已作答</span></div></details>';
+  h+='<div class="sub mt" style="text-align:center"><span class="kbd">←</span> <span class="kbd">→</span> 切题 · <span class="kbd">Enter</span> 提交/下一题 · <span class="kbd">A–D</span> 选择 · <span class="kbd">T</span>/<span class="kbd">F</span> 判断 · <span class="kbd">S</span> 收藏</div>';
+  return h;
+}
+function qBody(q,a,locked,ptsTxt){
+  let h='';
+  if(q.t==='f'){
+    const parts=q.q.split(/_{3,}/);const marks=locked?(a.ov?q.a.map(()=>true):fillMarks(q,a)):[];
+    h+='<div class="qtext">';
+    parts.forEach((p,i)=>{h+=esc(p);if(i<parts.length-1){const val=(a.v&&a.v[i])||'';h+='<input class="blank '+(locked?(marks[i]?'ok':'bad'):'')+'" data-bi="'+i+'" value="'+esc(val)+'" '+(locked?'readonly':'')+' autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="第'+(i+1)+'空">';}});
+    h+='</div>';
+    if(!locked&&SES.instant)h+='<div class="qact"><button class="btn pri" data-act="submit">提交答案</button><span class="sub">多个空依次填写，Enter 键提交</span></div>';
+  }else if(q.t==='c'){
+    const ord=ordOf(q,a);
+    h+='<div class="qtext">'+esc(q.q)+'</div><div class="opts">'+ord.map((oi,k)=>{
+      let cls=a.v===oi?'sel':'';
+      if(locked){cls=oi===q.a?'ok':(a.v===oi?'bad':'');}
+      return '<button class="opt '+cls+' '+(locked?'lock':'')+'" data-act="pick" data-arg="'+oi+'"><span class="k">'+'ABCD'[k]+'</span><span class="t">'+esc(q.o[oi])+'</span></button>';}).join('')+'</div>';
+  }else if(q.t==='j'){
+    const f=(v)=>{let cls=a.v===v?'sel':'';if(locked){cls=v===q.a?'ok':(a.v===v?'bad':'');}return cls+(locked?' lock':'');};
+    h+='<div class="qtext">'+esc(q.q)+'</div><div class="jrow"><button class="jbtn '+f(true)+'" data-act="judge" data-arg="1"><b>√</b>正确</button><button class="jbtn '+f(false)+'" data-act="judge" data-arg="0"><b>×</b>错误</button></div>';
+  }else{
+    h+='<div class="qtext">'+esc(q.q)+ptsTxt+'</div>';
+    h+='<textarea class="ans '+(q.t==='p'?'code':'')+'" id="ta" placeholder="'+(q.t==='p'?'在这里写出命令 / 脚本 / 程序（可选，写出来记忆更牢）':'在这里写出你的要点（可选）')+'" spellcheck="false" >'+esc(a.v||'')+'</textarea>';
+    if(SES.instant&&!a.rev)h+='<div class="qact"><button class="btn pri" data-act="reveal">查看参考答案</button><span class="sub">先自己想一想或写一写，再对照</span></div>';
+    else if(!SES.instant)h+='<div class="qact"><span class="sub">交卷后对照参考答案自评打分</span></div>';
+  }
+  return h;
+}
+function rateBar(q,a){
+  const R=[[1,'完全掌握'],[.7,'基本正确'],[.4,'部分正确'],[0,'没答出']];
+  return '<div class="rate"><span class="lb">对照参考答案，自评：</span>'+R.map(([s,l])=>'<button class="btn sm '+(a.sc===s?'on'+(s===0?' r0':''):'')+'" data-act="rate" data-arg="'+s+'">'+l+'</button>').join('')+'</div>';
+}
+function feedback(q,a,locked){
+  if(isSub(q)){
+    if(!a.rev)return '';
+    const cls=a.sc==null?'neu':(a.sc>=.7?'ok':'bad');
+    return '<div class="fb '+cls+'"><div class="v">参考答案</div><div class="ans">'+ansHtml(q)+'</div>'+rateBar(q,a)+expHtml(q)+'</div>';
+  }
+  if(!locked)return '';
+  const ok=a.ok;
+  let h='<div class="fb '+(ok?'ok':'bad')+'"><div class="v">'+(ok?IC.check.replace('<svg','<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"'):IC.x.replace('<svg','<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"'))+(ok?(a.ov?'已按"答对"记录':'回答正确'):'回答错误')+'</div>';
+  if(!ok||q.t==='f')h+='<div class="ans"><span class="sub">正确答案：</span>'+ansHtml(q,a.ord)+'</div>';
+  if(q.t==='f'&&!ok)h+='<div style="margin-top:8px"><button class="btn sm" data-act="override">我的答案其实也对（等价写法）</button></div>';
+  h+=expHtml(q)+'</div>';
+  return h;
+}
+function afterRunRender(){
+  const q=curQ();if(!q)return;
+  const f=$('.blank:not([readonly])');
+  if(f&&!('ontouchstart' in window))f.focus();
+}
+
+/* 答题动作 */
+function commit(q,a){
+  if(a.chk)return;
+  a.chk=true;a.ok=gradeObj(q,a);
+  if(SES.instant)applyRecord(q,a);
+  persistSession();
+}
+function goto(i){SES.idx=Math.max(0,Math.min(SES.ids.length-1,i));persistSession();render(true);window.scrollTo({top:0});}
+function finishSession(){
+  if(!SES||SES.done)return;
+  const ms=elapsed();
+  if(SES.instant){
+    // 即时反馈：已即时记录，未提交的填空视为未作答
+  }else{
+    SES.ids.forEach(id=>{
+      const q=BY[id],a=SES.ans[id];
+      if(!a||isSub(q)||!answered(q,a))return;
+      a.chk=true;a.ok=gradeObj(q,a);applyRecord(q,a);
+    });
+  }
+  SES.done=true;SES.ms=ms;
+  const objIds=SES.ids.filter(id=>!isSub(BY[id])&&SES.ans[id]&&SES.ans[id].chk);
+  const okN=objIds.filter(id=>SES.ans[id].ok).length;
+  S.resume=null;
+  SES.entry={t:Date.now(),mode:SES.mode,title:SES.title,n:SES.ids.length,ms};
+  S.hist.push(SES.entry);if(S.hist.length>150)S.hist=S.hist.slice(-150);
+  if(SES.mode==='exam'){const sc=examScore();S.exams.push({t:SES.entry.t,score:sc.got,full:sc.full,ms:ms,range:(SES.cfg&&SES.cfg.range)||'全部章节'});}
+  saveNow();
+  go('#/result');
+}
+function examScore(){
+  let got=0,full=0,byT={};
+  SES.ids.forEach(id=>{
+    const q=BY[id],a=SES.ans[id]||{},p=SES.pts[id]||1;full+=p;
+    const b=byT[q.t]||(byT[q.t]={got:0,full:0,n:0,ok:0,done:0});b.full+=p;b.n++;
+    if(isSub(q)){if(a.sc!=null){b.done++;b.got+=p*a.sc;if(a.sc>=.7)b.ok++;}}
+    else if(a.chk){b.done++;if(a.ok){b.got+=p;b.ok++;}}
+  });
+  Object.values(byT).forEach(b=>{got+=b.got;});
+  return {got:Math.round(got*10)/10,full,byT};
+}
+
+/* ====================== 结果页 ====================== */
+function vResult(){
+  const n=SES.ids.length;
+  let h='';
+  if(SES.mode==='exam'){
+    const sc=examScore();const unrated=SES.ids.filter(id=>isSub(BY[id])&&SES.ans[id]&&SES.ans[id].sc==null).length;
+    const p=pct(sc.got,sc.full);
+    h+='<div class="row mb"><h1>成绩单</h1><span class="sub">'+esc(SES.title)+' · 用时 '+fmtT(SES.ms)+'</span></div>';
+    h+='<div class="card"><div class="row" style="gap:30px"><div><div class="score">'+sc.got+'<small> / '+sc.full+'</small></div><div class="sub" style="margin-top:6px">'+(p>=90?'优秀，保持状态':p>=75?'良好，再补一补薄弱点':p>=60?'及格，建议重点复习错题':'还需加强，先从错题本开始')+'</div></div><div class="sp"></div><div class="ring" style="--p:'+p+'"><div>'+p+'%<small>得分率</small></div></div></div>';
+    h+='<table class="t mt"><tr><th>题型</th><th class="n">已评/总数</th><th class="n">答对</th><th class="n">得分</th></tr>'+TORDER.filter(t=>sc.byT[t]).map(t=>{const b=sc.byT[t];return '<tr><td>'+TYPES[t]+'</td><td class="n">'+b.done+'/'+b.n+'</td><td class="n">'+b.ok+'</td><td class="n">'+Math.round(b.got*10)/10+' / '+b.full+'</td></tr>';}).join('')+'</table>';
+    if(unrated)h+='<div class="banner mt"><span>还有 <b>'+unrated+'</b> 道简答/编程题尚未自评，下方对照参考答案打分后成绩才完整。</span></div>';
+    h+='</div>';
+  }else{
+    const ids=SES.ids.filter(id=>SES.ans[id]&&(SES.ans[id].chk||SES.ans[id].sc!=null));
+    const ok=ids.filter(id=>SES.ans[id].ok).length;
+    const p=pct(ok,ids.length);
+    h+='<div class="row mb"><h1>本组完成</h1><span class="sub">'+esc(SES.title)+' · 用时 '+fmtT(SES.ms)+'</span></div>';
+    h+='<div class="card"><div class="row" style="gap:30px"><div><div class="score">'+ok+'<small> / '+ids.length+'</small></div><div class="sub" style="margin-top:6px">已作答 '+ids.length+'/'+n+' 题'+(ids.length-ok?'，'+(ids.length-ok)+' 题已加入错题本':'，全部正确')+'</div></div><div class="sp"></div><div class="ring" style="--p:'+p+'"><div>'+p+'%<small>正确率</small></div></div></div></div>';
+  }
+  const wrongIds=SES.ids.filter(id=>SES.ans[id]&&(SES.ans[id].chk||SES.ans[id].sc!=null)&&!SES.ans[id].ok);
+  const skipped=SES.ids.filter(id=>!(SES.ans[id]&&(SES.ans[id].chk||SES.ans[id].sc!=null)));
+  h+='<div class="row mt" style="gap:10px"><button class="btn pri" data-act="again">'+(SES.mode==='exam'?'再考一次':'再来一组')+'</button>'+(wrongIds.length?'<button class="btn" data-act="redo-wrong">重做本次错题（'+wrongIds.length+'）</button>':'')+'<button class="btn" data-go="home">回首页</button></div>';
+  // 逐题回顾
+  h+='<div class="sec"><h2>逐题回顾</h2><div class="seg" id="rvf"><button class="on" data-act="rv" data-v="all">全部</button><button data-act="rv" data-v="bad">错题</button></div></div><div id="rvlist">';
+  SES.ids.forEach((id,i)=>{h+=reviewItem(BY[id],SES.ans[id]||{},i);});
+  h+='</div>';
+  return h;
+}
+function reviewItem(q,a,i){
+  const state=isSub(q)?(a.sc==null?'un':(a.sc>=.7?'ok':'bad')):(!a.chk?'un':(a.ok?'ok':'bad'));
+  const tag=state==='ok'?'<span class="tag ok">正确</span>':state==='bad'?'<span class="tag bad">错误</span>':'<span class="tag warn">'+(isSub(q)?'待自评':'未作答')+'</span>';
+  const pts=SES.pts&&SES.pts[q.id]?'<span class="tag">'+SES.pts[q.id]+' 分</span>':'';
+  let mine='';
+  if(q.t==='c'&&a.v!=null)mine='<div class="sub" style="margin-top:8px">你的答案：'+esc(q.o[a.v])+'</div>';
+  if(q.t==='j'&&a.v!=null)mine='<div class="sub" style="margin-top:8px">你的答案：'+(a.v?'正确':'错误')+'</div>';
+  if(q.t==='f'&&answered(q,a))mine='<div class="sub" style="margin-top:8px">你的答案：'+esc((a.v||[]).join(' ； '))+'</div>';
+  if(isSub(q)&&(a.v||'').trim())mine='<div style="margin-top:8px" class="sub">你的作答：</div><pre class="txt">'+esc(a.v)+'</pre>';
+  const optList=q.t==='c'?'<ul class="opts-s">'+q.o.map((o,k)=>'<li class="'+(k===q.a?'ok':'')+'">'+'ABCD'[k]+'. '+esc(o)+'</li>').join('')+'</ul>':'';
+  const open=(state!=='ok'||isSub(q))?'open':'';
+  return '<details class="qi" data-st="'+state+'" '+open+'><summary><span class="qno">'+(i+1)+'</span><div class="st"><div class="tg">'+tTag(q.t)+'<span class="tag">第'+q.ch+'章 · '+esc(q.tp)+'</span>'+pts+tag+'</div><div class="tx">'+esc(q.q)+'</div></div></summary><div class="bd">'+optList+mine+'<div class="ans" style="margin-top:10px"><span class="sub">参考答案：</span>'+ansHtml(q)+'</div>'+(isSub(q)?'<div data-rate="'+q.id+'">'+rateBar(q,a)+'</div>':'')+expHtml(q)+'</div></details>';
+}
+
+/* ====================== 错题本 ====================== */
+const WS={tab:'open',ch:0,t:''};
+function vWrong(){
+  const open=Q.filter(q=>isWrong(q.id)),mas=Q.filter(q=>isMas(q.id));
+  let list=(WS.tab==='open'?open:mas).filter(q=>(!WS.ch||q.ch===WS.ch)&&(!WS.t||q.t===WS.t));
+  list=list.sort((a,b)=>(S.rec[b.id].lw||S.rec[b.id].last||0)-(S.rec[a.id].lw||S.rec[a.id].last||0));
+  let h='<div class="row mb"><div><h1>错题本</h1><div class="sub">答错的题自动收录；之后连续答对 2 次，自动移入「已掌握」</div></div><span class="sp"></span><button class="btn" data-act="print-wrong" '+(open.length?'':'disabled')+'>打印 / 导出 PDF</button><button class="btn pri" data-act="redo-all" '+(open.length?'':'disabled')+'>'+IC.play+'重练待攻克（'+open.length+'）</button></div>';
+  h+='<div class="row mb"><div class="seg"><button class="'+(WS.tab==='open'?'on':'')+'" data-act="w-tab" data-v="open">待攻克 '+open.length+'</button><button class="'+(WS.tab==='mas'?'on':'')+'" data-act="w-tab" data-v="mas">已掌握 '+mas.length+'</button></div><select id="wch"><option value="0">全部章节</option>'+CHS.map(c=>'<option value="'+c+'" '+(WS.ch===c?'selected':'')+'>第'+c+'章 '+esc(CHN(c))+'</option>').join('')+'</select><select id="wt"><option value="">全部题型</option>'+TORDER.map(t=>'<option value="'+t+'" '+(WS.t===t?'selected':'')+'>'+TYPES[t]+'</option>').join('')+'</select></div>';
+  if(!list.length){
+    h+='<div class="card empty"><b>'+(WS.tab==='open'?(open.length?'这个筛选下没有错题':'还没有错题'):'暂无已掌握的错题')+'</b>'+(WS.tab==='open'&&!open.length?'做题时答错的题目会出现在这里':'')+'</div>';
+  }else{
+    h+=list.map(q=>qItem(q,true)).join('');
+  }
+  return h;
+}
+function qItem(q,showHist){
+  const r=S.rec[q.id]||{};
+  const tags=[tTag(q.t),'<span class="tag">第'+q.ch+'章 · '+esc(q.tp)+'</span>'];
+  if(isWrong(q.id))tags.push('<span class="tag bad">错题 ×'+(r.w||0)+'</span>');
+  else if(isMas(q.id))tags.push('<span class="tag ok">已掌握</span>');
+  else if(isNew(q.id))tags.push('<span class="tag">未做</span>');
+  else tags.push('<span class="tag ok">已做 '+r.c+'/'+r.a+'</span>');
+  if(isStar(q.id))tags.push('<span class="tag warn">★ 收藏</span>');
+  const optList=q.t==='c'?'<ul class="opts-s">'+q.o.map((o,k)=>'<li class="'+(k===q.a?'ok':'')+'">'+'ABCD'[k]+'. '+esc(o)+'</li>').join('')+'</ul>':'';
+  const mine=showHist&&r.la?'<div class="sub" style="margin-top:8px">你上次的答案：<span style="color:var(--bad)">'+esc(r.la)+'</span></div>':'';
+  return '<details class="qi"><summary><div class="st"><div class="tg">'+tags.join('')+'</div><div class="tx">'+esc(q.q)+'</div></div></summary><div class="bd">'+optList+mine+'<div class="ans" style="margin-top:10px"><span class="sub">参考答案：</span>'+ansHtml(q)+'</div>'+expHtml(q)+'<div class="row" style="margin-top:12px"><button class="btn sm" data-act="one" data-arg="'+q.id+'">单独重做</button><button class="btn sm" data-act="bank-star" data-arg="'+q.id+'">'+(isStar(q.id)?'取消收藏':'收藏')+'</button>'+(isWrong(q.id)?'<button class="btn sm" data-act="mark-mas" data-arg="'+q.id+'">标记为已掌握</button>':'')+'</div></div></details>';
+}
+function printWrong(){
+  const list=Q.filter(q=>isWrong(q.id));
+  const pa=$('#printArea');
+  pa.innerHTML='<h1>Linux 系统及应用 · 错题本（'+dayKey(Date.now())+'，共 '+list.length+' 题）</h1>'+list.map((q,i)=>{
+    let body='';
+    if(q.t==='c')body='<div>'+q.o.map((o,k)=>'ABCD'[k]+'. '+esc(o)).join('　')+'</div>';
+    let ans;
+    if(q.t==='f')ans=q.a.map(a=>esc(a[0])).join('；');
+    else if(q.t==='c')ans='ABCD'[q.a]+'. '+esc(q.o[q.a]);
+    else if(q.t==='j')ans=q.a?'√ 正确':'× 错误';
+    else ans='<pre>'+esc(q.a)+'</pre>';
+    return '<div class="pq"><div><b>'+(i+1)+'.</b> ['+TYPES[q.t]+' · 第'+q.ch+'章] '+esc(q.q)+'</div>'+body+'<div class="pa"><b>答案：</b>'+ans+'</div>'+(q.e?'<div class="pe">解析：'+esc(q.e)+'</div>':'')+'</div>';
+  }).join('');
+  setTimeout(()=>window.print(),80);
+}
+
+/* ====================== 题库浏览 ====================== */
+const BS={q:'',ch:0,t:'',st:'all',lim:40};
+function vBank(){
+  const kw=BS.q.trim().toLowerCase();
+  let list=Q.filter(q=>(!BS.ch||q.ch===BS.ch)&&(!BS.t||q.t===BS.t)&&
+    (BS.st==='all'||(BS.st==='new'&&isNew(q.id))||(BS.st==='done'&&!isNew(q.id))||(BS.st==='wrong'&&isWrong(q.id))||(BS.st==='mas'&&isMas(q.id))||(BS.st==='star'&&isStar(q.id)))&&
+    (!kw||(q.q+' '+(q.tp)+' '+(q.e||'')+' '+(q.o?q.o.join(' '):'')+' '+(typeof q.a==='string'?q.a:'')).toLowerCase().includes(kw)));
+  let h='<div class="row mb"><div><h1>题库浏览</h1><div class="sub">查题、背答案、按关键词搜索；展开可看答案与解析</div></div></div>';
+  h+='<div class="row mb"><div class="search">'+IC.search+'<input class="inp" id="bq" placeholder="搜索关键词，如 fork、umask、管道…" value="'+esc(BS.q)+'"></div><select id="bch"><option value="0">全部章节</option>'+CHS.map(c=>'<option value="'+c+'" '+(BS.ch===c?'selected':'')+'>第'+c+'章</option>').join('')+'</select><select id="bt"><option value="">全部题型</option>'+TORDER.map(t=>'<option value="'+t+'" '+(BS.t===t?'selected':'')+'>'+TYPES[t]+'</option>').join('')+'</select><select id="bst">'+[['all','全部状态'],['new','未做'],['done','已做'],['wrong','错题'],['mas','已掌握'],['star','收藏']].map(([k,l])=>'<option value="'+k+'" '+(BS.st===k?'selected':'')+'>'+l+'</option>').join('')+'</select></div>';
+  h+='<div class="sub mb">共 '+list.length+' 题</div>';
+  h+=list.slice(0,BS.lim).map(q=>qItem(q,false)).join('');
+  if(list.length>BS.lim)h+='<div style="text-align:center;margin-top:14px"><button class="btn" data-act="more">加载更多（还有 '+(list.length-BS.lim)+' 题）</button></div>';
+  if(!list.length)h+='<div class="card empty"><b>没有找到题目</b>换个关键词或筛选条件试试</div>';
+  return h;
+}
+
+/* ====================== 统计 ====================== */
+function vStats(){
+  const o=overall(),sm=streakDays();
+  let h='<h1>学习统计</h1><div class="sub mb">所有数据只保存在这台设备的浏览器里</div>';
+  h+='<div class="grid g4"><div class="card stat"><div class="sub">已做题目</div><div class="score" style="font-size:34px">'+o.done+'<small>/'+o.n+'</small></div>'+bar(pct(o.done,o.n))+'</div><div class="card stat"><div class="sub">最近一次答对率</div><div class="score" style="font-size:34px">'+pct(o.okLatest,o.done)+'<small>%</small></div>'+bar(pct(o.okLatest,o.done))+'</div><div class="card stat"><div class="sub">累计答题</div><div class="score" style="font-size:34px">'+o.att+'<small> 次</small></div><div class="sub">累计正确率 '+pct(o.cor,o.att)+'%</div></div><div class="card stat"><div class="sub">连续学习</div><div class="score" style="font-size:34px">'+sm+'<small> 天</small></div><div class="sub">待攻克错题 '+o.wrong+' · 已掌握 '+o.mas+'</div></div></div>';
+  h+='<div class="sec"><h2>各章掌握情况</h2></div><div class="card flat"><table class="t"><tr><th>章节</th><th class="n">已做</th><th class="n">答对</th><th class="n">错题</th><th style="width:34%">掌握度</th></tr>'+CHS.map(ch=>{const s=chStat(ch);const a=s.acc==null?0:Math.round(s.acc*100);return '<tr><td><b>CH'+ch+'</b> '+esc(CHN(ch))+'</td><td class="n">'+s.done+'/'+s.n+'</td><td class="n">'+s.ok+'</td><td class="n">'+(s.wrong||'-')+'</td><td>'+bar(pct(s.ok,s.n),a<60&&s.done?'bad':'')+'</td></tr>';}).join('')+'</table></div>';
+  h+='<div class="sec"><h2>各专题正确率</h2><span class="sub">从低到高；至少做过 1 题</span></div><div class="card flat"><table class="t"><tr><th>专题</th><th class="n">已做</th><th class="n">正确率</th></tr>'+(TOPICS.map(t=>({t,s:topicStat(t)})).filter(x=>x.s.done).sort((a,b)=>a.s.acc-b.s.acc).map(({t,s})=>'<tr><td><span class="tag">第'+t.ch+'章</span> '+esc(t.tp)+'</td><td class="n">'+s.done+'/'+s.n+'</td><td class="n" style="color:'+(s.acc<.6?'var(--bad)':s.acc<.8?'var(--warn)':'var(--accent)')+'"><b>'+Math.round(s.acc*100)+'%</b></td></tr>').join('')||'<tr><td colspan="3" class="sub">做几道题之后，这里会显示各专题的正确率</td></tr>')+'</table></div>';
+  h+='<div class="sec"><h2>各题型</h2></div><div class="grid g4">'+TORDER.map(t=>{const ids=Q.filter(q=>q.t===t).map(q=>q.id),d=ids.filter(id=>!isNew(id)),ok=d.filter(id=>S.rec[id].res===1).length;return '<div class="card flat"><div>'+tTag(t)+'</div><div class="score" style="font-size:28px;margin-top:8px">'+pct(ok,d.length)+'<small>%</small></div><div class="sub">已做 '+d.length+'/'+ids.length+'</div></div>';}).join('')+'</div>';
+  h+='<div class="sec"><h2>近 14 天</h2></div><div class="card">'+activityChart()+'</div>';
+  const ex=S.exams.slice(-8);
+  if(ex.length){const mx=100;h+='<div class="sec"><h2>模考成绩趋势</h2></div><div class="card"><div class="act">'+ex.map(e=>'<div title="'+dayKey(e.t)+'：'+e.score+'/'+e.full+'"><i style="height:calc((100% - 17px)*'+(e.score/e.full).toFixed(3)+');max-width:38px"><b style="height:100%"></b></i><small>'+Math.round(e.score/e.full*100)+'</small></div>').join('')+'</div></div>';}
+  const hs=S.hist.slice(-10).reverse();
+  if(hs.length)h+='<div class="sec"><h2>最近练习</h2></div><div class="card flat"><table class="t"><tr><th>时间</th><th>内容</th><th class="n">题数</th><th class="n">用时</th></tr>'+hs.map(x=>'<tr><td>'+dayKey(x.t)+'</td><td>'+(x.mode==='exam'?'<span class="tag warn">模考</span> ':'')+esc(x.title)+'</td><td class="n">'+x.n+'</td><td class="n">'+fmtT(x.ms)+'</td></tr>').join('')+'</table></div>';
+  h+='<div class="sec"><h2>数据管理</h2></div><div class="card flat row"><button class="btn" data-act="export">导出进度（JSON 备份）</button><button class="btn" data-act="import">导入进度</button><span class="sp"></span><button class="btn bad" data-act="reset">清空全部记录</button></div>';
+  return h;
+}
+
+/* ====================== 设置 ====================== */
+function openSettings(){
+  openModal('<div class="row" style="margin-bottom:14px"><h2 style="flex:1">设置与数据</h2><button class="iconbtn" data-act="close-modal">'+IC.x+'</button></div>'+
+  '<div class="field"><div class="lb">主题</div><div class="seg">'+[['auto','跟随系统'],['light','浅色'],['dark','深色']].map(([k,l])=>'<button class="'+(S.set.theme===k?'on':'')+'" data-act="theme" data-v="'+k+'">'+l+'</button>').join('')+'</div></div>'+
+  '<div class="field"><span class="switch '+(S.set.shuffle?'on':'')+'" data-act="s-shuffle"><i></i>选择题选项乱序（防止背字母）</span></div>'+
+  '<div class="field"><span class="switch '+(S.set.instant?'on':'')+'" data-act="s-instant"><i></i>练习默认「即时反馈」</span></div>'+
+  '<div class="field"><div class="lb">学习记录</div><div class="sub" style="margin-bottom:10px">记录保存在当前浏览器中。换电脑或清理浏览器数据前，请先导出备份。</div><div class="row"><button class="btn" data-act="export">导出进度</button><button class="btn" data-act="import">导入进度</button><button class="btn bad" data-act="reset">清空记录</button></div></div>'+
+  '<div class="sub">题库 '+Q.length+' 题 · 复习间隔：1 / 2 / 4 / 7 / 15 / 30 天</div>');
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(S)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='linux题库进度-'+dayKey(Date.now()).replace(/-/g,'')+'.json';document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);toast('已导出');
+}
+function importData(txt){
+  let o;try{o=JSON.parse(txt);}catch(e){toast('文件格式不正确');return;}
+  if(!o||typeof o!=='object'||!o.rec){toast('不是有效的进度文件');return;}
+  let n=0;
+  Object.keys(o.rec).forEach(id=>{if(!BY[id])return;const a=S.rec[id],b=o.rec[id];if(!a||(b.last||0)>(a.last||0)){S.rec[id]=b;n++;}});
+  Object.assign(S.stars,o.stars||{});
+  Object.keys(o.log||{}).forEach(k=>{const a=S.log[k],b=o.log[k];if(!a||b.n>a.n)S.log[k]=b;});
+  const seen=new Set(S.hist.map(x=>x.t));(o.hist||[]).forEach(x=>{if(!seen.has(x.t))S.hist.push(x);});S.hist.sort((a,b)=>a.t-b.t);
+  const se=new Set(S.exams.map(x=>x.t));(o.exams||[]).forEach(x=>{if(!se.has(x.t))S.exams.push(x);});S.exams.sort((a,b)=>a.t-b.t);
+  saveNow();closeModal();render(true);toast('已合并导入，更新 '+n+' 道题的记录');
+}
+
+/* ====================== 事件 ====================== */
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]');
+  if(g){closeModal();go('#/'+g.dataset.go);return;}
+  const b=e.target.closest('[data-act]');
+  if(!b)return;
+  act(b.dataset.act,b.dataset.arg||b.dataset.v,b);
+});
+function act(a,arg,el){
+  switch(a){
+    case 'close-modal':closeModal();break;
+    case 'resume':resumeSession();break;
+    case 'discard':if(confirm('放弃未完成的练习？')){S.resume=null;saveNow();render(true);}break;
+    case 'smart':startSession({mode:'practice',title:'今日复习',ids:buildSmart(20),instant:S.set.instant});break;
+    case 's-wrong':startSession({mode:'practice',title:'错题攻克',ids:shuffle(Q.filter(q=>isWrong(q.id)).map(q=>q.id)).slice(0,30),instant:true});break;
+    case 's-due':startSession({mode:'practice',title:'到期复习',ids:Q.filter(q=>isDue(q.id)).sort((a,b)=>S.rec[a.id].due-S.rec[b.id].due).map(q=>q.id).slice(0,30),instant:true});break;
+    case 's-weak':{const w=weakTopics().slice(0,3).map(x=>x.t.key);startSession({mode:'practice',title:'薄弱专题强化',ids:shuffle(Q.filter(q=>w.includes(q.ch+'|'+q.tp)).map(q=>q.id)).slice(0,25),instant:true});break;}
+    case 's-new':startSession({mode:'practice',title:'新题探索',ids:buildNew(20),instant:S.set.instant});break;
+    case 'topic':startSession({mode:'practice',title:TOPIC_IDX[arg].tp,ids:shuffle(TOPIC_IDX[arg].ids).slice(0,20),instant:true});break;
+    case 'chapter':{const c=+arg;startSession({mode:'practice',title:'第'+c+'章 '+CHN(c),ids:shuffle(Q.filter(q=>q.ch===c).map(q=>q.id)).sort((x,y)=>(isNew(y)-isNew(x))).slice(0,20),instant:S.set.instant});break;}
+    // 练习设置
+    case 'tg':{const k=el.dataset.k,v=el.dataset.v,set=PS[k];const val=k==='chs'?+v:v;set.has(val)?set.delete(val):set.add(val);if(k==='chs'&&!PS.chs.has(+v)){[...PS.topics].forEach(t=>{if(t.startsWith(v+'|'))PS.topics.delete(t);});}render(true);break;}
+    case 'all-ch':PS.chs=new Set(CHS);render(true);break;
+    case 'no-ch':PS.chs=new Set();PS.topics.clear();render(true);break;
+    case 'clr-tp':PS.topics.clear();render(true);break;
+    case 'src':PS.src=arg;render(true);break;
+    case 'n':PS.n=+arg;render(true);break;
+    case 'order':PS.order=arg;render(true);break;
+    case 'p-inst':PS.instant=!(PS.instant==null?S.set.instant:PS.instant);render(true);break;
+    case 'p-start':{
+      let ids=poolOf(PS);
+      if(PS.order==='rand')ids=shuffle(ids);
+      if(PS.n&&ids.length>PS.n){ids=PS.order==='rand'?ids.slice(0,PS.n):shuffle(ids).slice(0,PS.n).sort((x,y)=>x.i-y.i);}
+      if(PS.order==='seq')ids=ids.slice().sort((x,y)=>x.i-y.i);
+      startSession({mode:'practice',title:'自选练习',ids:ids.map(q=>q.id),instant:PS.instant==null?S.set.instant:PS.instant,cfg:{custom:1}});break;}
+    // 考试
+    case 'e-tg':{const v=+arg;ES.chs.has(v)?ES.chs.delete(v):ES.chs.add(v);render(true);break;}
+    case 'e-all':ES.chs=new Set(CHS);render(true);break;
+    case 'e-limit':ES.limit=+arg;render(true);break;
+    case 'e-pref':ES.pref=arg;render(true);break;
+    case 'e-start':{const ex=buildExam();const all=ES.chs.size===CHS.length;startSession({mode:'exam',title:'模拟考试 · '+(all?'期末综合':[...ES.chs].sort().map(c=>'CH'+c).join(' ')),ids:ex.ids,pts:ex.pts,instant:false,limit:ES.limit,cfg:{range:all?'全部章节':[...ES.chs].sort().map(c=>'第'+c+'章').join('、')}});break;}
+    // 答题
+    case 'quit':syncCur();persistSession();toast('进度已保存，可在首页继续');SES=null;go('#/home');break;
+    case 'pick':{const q=curQ(),a=curA(q);if(SES.instant&&a.chk)break;a.v=+arg;if(SES.instant)commit(q,a);else persistSession();render(true);break;}
+    case 'judge':{const q=curQ(),a=curA(q);if(SES.instant&&a.chk)break;a.v=arg==='1';if(SES.instant)commit(q,a);else persistSession();render(true);break;}
+    case 'submit':{const q=curQ(),a=curA(q);syncInputs(q,a);if(!answered(q,a)){toast('先填写答案');break;}commit(q,a);render(true);break;}
+    case 'reveal':{const q=curQ(),a=curA(q);syncInputs(q,a);a.rev=true;persistSession();render(true);break;}
+    case 'rate':{const q=curQ(),a=curA(q);a.sc=+arg;a.chk=true;if(a.rec)reRecord(q,a,a.sc>=.7);else{a.ok=a.sc>=.7;applyRecord(q,a);}persistSession();render(true);break;}
+    case 'override':{const q=curQ(),a=curA(q);a.ov=true;reRecord(q,a,true);persistSession();render(true);break;}
+    case 'star':{const q=curQ();toggleStar(q.id);render(true);break;}
+    case 'next':syncCur();goto(SES.idx+1);break;
+    case 'prev':syncCur();goto(SES.idx-1);break;
+    case 'jump':syncCur();SES.navOpen=true;goto(+arg);break;
+    case 'finish':syncCur();
+      if(!SES.instant){const un=SES.ids.filter(id=>!answered(BY[id],SES.ans[id])).length;if(un&&!confirm('还有 '+un+' 题未作答，确定交卷吗？'))break;}
+      finishSession();break;
+    case 'again':{const c=SES.cfg;if(SES.mode==='exam'){go('#/exam');}else if(c&&c.custom){go('#/practice');}else{startSession({mode:'practice',title:'今日复习',ids:buildSmart(20),instant:S.set.instant});}break;}
+    case 'redo-wrong':{const ids=SES.ids.filter(id=>SES.ans[id]&&(SES.ans[id].chk||SES.ans[id].sc!=null)&&!SES.ans[id].ok);startSession({mode:'practice',title:'本次错题重做',ids:shuffle(ids),instant:true});break;}
+    case 'rv':{$$('#rvf button').forEach(x=>x.classList.toggle('on',x===el));$$('#rvlist .qi').forEach(d=>{d.classList.toggle('hide',arg==='bad'&&d.dataset.st==='ok');});break;}
+    // 评分（结果页）
+    // 错题本
+    case 'w-tab':WS.tab=arg;render(true);break;
+    case 'redo-all':startSession({mode:'practice',title:'错题重练',ids:shuffle(Q.filter(q=>isWrong(q.id)).map(q=>q.id)).slice(0,40),instant:true});break;
+    case 'one':startSession({mode:'practice',title:'单题重做',ids:[arg],instant:true});break;
+    case 'bank-star':toggleStar(arg);render(true);break;
+    case 'mark-mas':{const r=S.rec[arg];if(r){r.wb=0;r.mas=1;save();}render(true);break;}
+    case 'print-wrong':printWrong();break;
+    case 'more':BS.lim+=40;render(true);break;
+    // 数据
+    case 'export':exportData();break;
+    case 'import':$('#fileIn').click();break;
+    case 'reset':if(confirm('这会清空所有答题记录、错题本和收藏，且无法恢复。建议先导出备份。确定清空吗？')&&confirm('再确认一次：真的要清空吗？')){const th=S.set;S=defState();S.set=th;saveNow();closeModal();location.hash='#/home';render();toast('已清空');}break;
+    case 'theme':S.set.theme=arg;saveNow();applyTheme();openSettings();break;
+    case 's-shuffle':S.set.shuffle=!S.set.shuffle;saveNow();openSettings();break;
+    case 's-instant':S.set.instant=!S.set.instant;saveNow();openSettings();break;
+  }
+}
+function buildNew(n){
+  const cs={};CHS.forEach(c=>cs[c]=chStat(c));
+  return shuffle(Q.filter(q=>isNew(q.id)).map(q=>q.id)).sort((a,b)=>cs[BY[a].ch].done/cs[BY[a].ch].n-cs[BY[b].ch].done/cs[BY[b].ch].n).slice(0,n);
+}
+function toggleStar(id){if(S.stars[id])delete S.stars[id];else S.stars[id]=1;save();}
+function syncInputs(q,a){
+  if(q.t==='f'){a.v=$$('.blank').map(i=>i.value);}
+  else if(isSub(q)){const t=$('#ta');if(t)a.v=t.value;}
+}
+function syncCur(){if(route!=='run'||!SES)return;const q=curQ();if(!q)return;const a=curA(q);if(q.t==='f'&&!a.chk)syncInputs(q,a);else if(isSub(q))syncInputs(q,a);}
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('blank')&&SES){const q=curQ(),a=curA(q);a.v=$$('.blank').map(i=>i.value);clearTimeout(act._t);act._t=setTimeout(persistSession,600);}
+  else if(t.id==='ta'&&SES){const q=curQ(),a=curA(q);a.v=t.value;clearTimeout(act._t);act._t=setTimeout(persistSession,600);}
+  else if(t.id==='bq'){BS.q=t.value;BS.lim=40;clearTimeout(act._s);act._s=setTimeout(()=>{const pos=t.selectionStart;render(true);const n=$('#bq');if(n){n.focus();n.setSelectionRange(pos,pos);}},180);}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='wch'){WS.ch=+t.value;render(true);}
+  else if(t.id==='wt'){WS.t=t.value;render(true);}
+  else if(t.id==='bch'){BS.ch=+t.value;BS.lim=40;render(true);}
+  else if(t.id==='bt'){BS.t=t.value;BS.lim=40;render(true);}
+  else if(t.id==='bst'){BS.st=t.value;BS.lim=40;render(true);}
+  else if(t.id==='fileIn'){const f=t.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importData(String(r.result));r.readAsText(f);t.value='';}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();return;}
+  if(route!=='run'||!SES||e.metaKey||e.altKey)return;
+  const q=curQ();if(!q)return;const a=curA(q);
+  const tg=e.target,typing=tg.tagName==='INPUT'||tg.tagName==='TEXTAREA';
+  if(e.key==='Enter'&&!e.shiftKey&&(!typing||tg.tagName==='INPUT'||e.ctrlKey)){
+    e.preventDefault();
+    if(q.t==='f'){ if(SES.instant&&!a.chk)act('submit');else act(SES.idx<SES.ids.length-1?'next':'finish'); return; }
+    if(isSub(q)){ if(SES.instant&&!a.rev)act('reveal'); else act(SES.idx<SES.ids.length-1?'next':'finish'); return; }
+    if(SES.instant&&a.chk)act(SES.idx<SES.ids.length-1?'next':'finish');
+    else if(!SES.instant)act(SES.idx<SES.ids.length-1?'next':'finish');
+    return;
+  }
+  if(typing)return;
+  if(e.ctrlKey)return;
+  if(e.key==='ArrowRight'){act('next');return;}
+  if(e.key==='ArrowLeft'){act('prev');return;}
+  const k=e.key.toLowerCase();
+  if(k==='s'){act('star');return;}
+  if(q.t==='c'){
+    const idx='abcd'.indexOf(k)>=0?'abcd'.indexOf(k):('1234'.indexOf(k));
+    if(idx>=0){const ord=ordOf(q,a);act('pick',String(ord[idx]));}
+  }else if(q.t==='j'){
+    if(k==='t'||k==='y'||k==='1')act('judge','1');else if(k==='f'||k==='n'||k==='2')act('judge','0');
+  }else if(isSub(q)&&a.rev){
+    const m={'1':1,'2':.7,'3':.4,'4':0}[k];if(m!=null)act('rate',String(m));
+  }
+});
+$('#btnTheme').addEventListener('click',()=>{
+  const dark=document.documentElement.getAttribute('data-theme')==='dark'||(S.set.theme==='auto'&&matchMedia('(prefers-color-scheme:dark)').matches);
+  S.set.theme=dark?'light':'dark';saveNow();applyTheme();
+});
+$('#btnSet').addEventListener('click',openSettings);
+
+// 结果页自评
+document.addEventListener('click',e=>{
+  if(route!=='result')return;
+  const b=e.target.closest('[data-act="rate"]');if(!b)return;
+  e.stopPropagation();
+  const host=b.closest('[data-rate]');if(!host)return;
+  const id=host.dataset.rate,q=BY[id],a=SES.ans[id]||(SES.ans[id]={});
+  a.sc=+b.dataset.arg;a.chk=true;
+  if(a.rec)reRecord(q,a,a.sc>=.7);else{a.ok=a.sc>=.7;applyRecord(q,a);}
+  const keep=window.scrollY;
+  const det=host.closest('details');const wasOpen=det&&det.open;
+  render(true);window.scrollTo(0,keep);
+  if(SES.mode==='exam'){
+    // 保存/更新考试成绩
+    const sc=examScore();
+    const idx=S.exams.findIndex(x=>x.t===SES.entry.t);
+    const rowE={t:SES.entry.t,score:sc.got,full:sc.full,ms:SES.ms,range:(SES.cfg&&SES.cfg.range)||'全部章节'};
+    if(idx>=0)S.exams[idx]=rowE;else S.exams.push(rowE);
+    save();
+  }
+},true);
+
+/* ====================== 启动 ====================== */
+load();applyTheme();
+if(!location.hash)location.hash='#/home';
+render();
+})();
+</script>
+</body>
+</html>
